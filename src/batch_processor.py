@@ -1,4 +1,4 @@
-# batch_processor.py - Multi-PDF Statement Processor
+# batch_processor.py - Enhanced with automatic finalization
 import os
 import re
 import pandas as pd
@@ -9,6 +9,7 @@ import logging
 from pdf_extractor import PDFExtractor
 from transaction_parser import TransactionParser
 from currency_handler import CurrencyHandler
+from statement_finalizer import finalize_statement_csv
 
 class BatchStatementProcessor:
     def __init__(self, pdf_folder: str, output_folder: str):
@@ -111,7 +112,8 @@ class BatchStatementProcessor:
         
         if matching_files:
             output_filename = self.generate_output_filename()
-            print(f"\n📁 Output will be: {output_filename}")
+            print(f"\n📁 Main CSV will be: {output_filename}")
+            print(f"📁 Card-specific CSVs will be auto-generated")
             print(f"📁 Output folder: {self.output_folder}")
         
         print("\n" + "="*80)
@@ -208,20 +210,20 @@ class BatchStatementProcessor:
         # Save CSV
         df.to_csv(output_path, index=False)
         
-        print(f"\n💾 Saved combined CSV: {filename}")
+        print(f"\n💾 Saved main CSV: {filename}")
         print(f"📁 Location: {output_path}")
         
         return output_path
     
-    def show_summary_report(self, df: pd.DataFrame) -> None:
+    def show_summary_report(self, df: pd.DataFrame, finalization_result: dict) -> None:
         """Show final processing summary"""
         print("\n" + "="*80)
-        print("📊 PROCESSING SUMMARY")
+        print("📊 BATCH PROCESSING SUMMARY")
         print("="*80)
         
         # File processing summary
         total_files = len(self.processed_files) + len(self.failed_files)
-        print(f"\n📁 Files:")
+        print(f"\n📁 PDF Processing:")
         print(f"  ✅ Successfully processed: {len(self.processed_files)}/{total_files}")
         print(f"  ❌ Failed: {len(self.failed_files)}/{total_files}")
         
@@ -253,14 +255,21 @@ class BatchStatementProcessor:
                 date_range = f"{df['Statement Date'].min()} to {df['Statement Date'].max()}"
                 print(f"\n📅 Statement date range: {date_range}")
         
+        # Finalization results
+        card_csvs = finalization_result.get('card_csvs', [])
+        if card_csvs:
+            print(f"\n📁 Output files ready for import:")
+            for csv_path in card_csvs:
+                print(f"  ✅ {os.path.basename(csv_path)}")
+        
         print("\n" + "="*80)
-        print("🎉 Batch processing complete!")
+        print("🎉 Complete! Ready for accounting system import!")
 
 def main():
     """Main function for batch processing"""
     print("="*80)
     print("BPI STATEMENT BATCH PROCESSOR")
-    print("Process multiple PDF statements into combined CSV")
+    print("Process multiple PDF statements with automatic account mapping")
     print("="*80)
     
     # Configuration
@@ -287,12 +296,19 @@ def main():
         # Process files
         df = processor.process_batch(matching_files)
         
-        # Save results
+        # Save main CSV
+        main_csv_path = ""
         if not df.empty:
-            processor.save_combined_csv(df)
+            main_csv_path = processor.save_combined_csv(df)
+        
+        # Auto-finalize: add account mapping and create card CSVs
+        finalization_result = {}
+        if main_csv_path:
+            print(f"\n🔄 Auto-finalizing statement...")
+            finalization_result = finalize_statement_csv(main_csv_path)
         
         # Show summary
-        processor.show_summary_report(df)
+        processor.show_summary_report(df, finalization_result)
         
     except FileNotFoundError as e:
         print(f"❌ Error: {e}")

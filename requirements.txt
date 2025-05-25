@@ -1,17 +1,7 @@
-# Core dependencies for BPI Statement Parser
-pandas==2.0.3
-PyPDF2==3.0.1
-python-dateutil==2.9.0.post0
-
-# PDF processing fallback
-pdfplumber==0.11.5
-
-# For Excel output (optional)
-openpyxl==3.1.5
-
-# Supporting dependencies
-numpy==1.24.4
-pytz==2025.2
-tzdata==2025.2
-six==1.17.0
-charset-normalizer==3.4.2
+pandas>=2.0.3
+PyPDF2>=3.0.1
+python-dateutil>=2.9.0.post0
+pdfplumber>=0.11.5
+openpyxl>=3.1.5
+fuzzywuzzy>=0.18.0
+python-levenshtein>=0.12.2
