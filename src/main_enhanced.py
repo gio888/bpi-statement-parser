@@ -26,7 +26,7 @@ def get_user_choice():
             sys.exit(0)
 
 def single_pdf_mode():
-    """Process single PDF (original functionality)"""
+    """Process single PDF with proper year extraction"""
     print("\n📄 SINGLE PDF MODE")
     print("-" * 30)
     
@@ -34,7 +34,7 @@ def single_pdf_mode():
     pdf_path = input("Enter PDF file path (or press Enter for default): ").strip()
     
     if not pdf_path:
-        pdf_path = "../data/Statement BPI Master 2025-05-12.pdf"
+        pdf_path = "/home/user/Library/CloudStorage/GoogleDrive-user@example.com/My Drive/Money/BPI/Statement BPI Master 2025-01-12.pdf"
         print(f"Using default: {pdf_path}")
     
     # Check if file exists
@@ -42,21 +42,98 @@ def single_pdf_mode():
         print(f"❌ File not found: {pdf_path}")
         return
     
-    # Import and run single PDF processor
     try:
-        from main_modular import main as process_single
-        # Temporarily modify the file path in main_modular
-        import main_modular
+        # Import required components
+        from pdf_extractor import PDFExtractor
+        from transaction_parser import TransactionParser
+        from currency_handler import CurrencyHandler
+        from statement_finalizer import finalize_statement_csv
+        import pandas as pd
+        import re
+        from datetime import datetime
         
-        # Run single PDF processing
-        print(f"\n🚀 Processing: {pdf_path}")
+        print(f"\n🚀 Processing: {os.path.basename(pdf_path)}")
         
-        # You could enhance this to accept the path parameter
-        # For now, user needs to place file in expected location
-        process_single()
+        # Extract year from filename
+        filename = os.path.basename(pdf_path)
+        pattern = r'Statement BPI Master (\d{4}-\d{2}-\d{2})\.pdf'
+        match = re.match(pattern, filename, re.IGNORECASE)
+        
+        statement_year = None
+        if match:
+            statement_date = datetime.strptime(match.group(1), "%Y-%m-%d").date()
+            statement_year = statement_date.year
+            print(f"📅 Statement year extracted: {statement_year}")
+        else:
+            print("⚠️  Could not extract year from filename, using current year")
+            statement_year = datetime.now().year
+        
+        # Step 1: Extract text from PDF
+        print("🔍 Extracting text from PDF...")
+        pdf_extractor = PDFExtractor(pdf_path)
+        text = pdf_extractor.extract_text()
+        
+        # Step 2: Parse transactions with year
+        print("⚙️  Parsing transactions...")
+        transaction_parser = TransactionParser()
+        transactions = transaction_parser.parse_transactions(text, statement_year)
+        
+        if not transactions:
+            print("❌ No transactions found in PDF")
+            return
+        
+        print(f"✅ Found {len(transactions)} transactions")
+        
+        # Step 3: Create DataFrame and clean
+        print("🧹 Processing data...")
+        df = pd.DataFrame(transactions)
+        currency_handler = CurrencyHandler()
+        df_clean = currency_handler.clean_dataframe(df, statement_year)
+        
+        # Step 4: Save main CSV
+        output_folder = "/home/user/Library/CloudStorage/GoogleDrive-user@example.com/My Drive/Money/BPI/"
+        timestamp = datetime.now().strftime("%Y-%m-%d-%H%M")
+        main_filename = f"For Import Statement BPI Master Single {timestamp}.csv"
+        main_csv_path = os.path.join(output_folder, main_filename)
+        
+        os.makedirs(output_folder, exist_ok=True)
+        df_clean.to_csv(main_csv_path, index=False)
+        
+        print(f"💾 Saved main CSV: {main_filename}")
+        
+        # Step 5: Auto-finalize (add account mapping and create card CSVs)
+        print("🔧 Finalizing with account mapping...")
+        finalization_result = finalize_statement_csv(main_csv_path, [statement_date])
+        
+        # Step 6: Show summary
+        print("\n" + "="*60)
+        print("📊 SINGLE PDF PROCESSING SUMMARY")
+        print("="*60)
+        print(f"📄 File: {filename}")
+        print(f"📅 Statement year: {statement_year}")
+        print(f"💳 Total transactions: {len(df_clean)}")
+        print(f"💰 Total amount: ₱{df_clean['Amount'].sum():,.2f}")
+        
+        # Show by card
+        if 'Card' in df_clean.columns:
+            print(f"\n💳 By card:")
+            for card in df_clean['Card'].unique():
+                card_data = df_clean[df_clean['Card'] == card]
+                print(f"  {card}: {len(card_data)} transactions, ₱{card_data['Amount'].sum():,.2f}")
+        
+        # Show output files
+        card_csvs = finalization_result.get('card_csvs', [])
+        if card_csvs:
+            print(f"\n📁 Output files created:")
+            for csv_path in card_csvs:
+                print(f"  ✅ {os.path.basename(csv_path)}")
+        
+        print(f"\n🎉 Complete! Ready for accounting system import!")
         
     except Exception as e:
         print(f"❌ Error processing PDF: {e}")
+        import traceback
+        traceback.print_exc()
 
 def batch_pdf_mode():
     """Process multiple PDFs"""

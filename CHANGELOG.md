@@ -2,6 +2,80 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2025-06-07
+
+### 🚀 Major Features Added
+- **Statement Date-Based File Naming**: CSV files now use actual statement dates instead of processing timestamps
+- **Cross-Year Transaction Handling**: December transactions in January statements correctly assigned to previous year
+- **Single PDF Mode**: Fixed and enhanced single PDF processing through main menu system
+- **Intelligent Year Extraction**: Automatic year detection from PDF filenames for accurate transaction dating
+
+### ✨ New Features
+- **Smart File Naming**:
+  - Single PDF: `For Import Statement BPI Master BPI_ECREDIT_CARD 2025-01-12.csv`
+  - Batch processing: `For Import Statement BPI Master BPI_ECREDIT_CARD 2024-01-14 to 2025-05-12.csv`
+- **Cross-Year Logic**: December transactions in January statements automatically get previous year (e.g., December 2024 transactions in January 2025 statement)
+- **Year-Aware Processing**: All transaction dates now use correct years extracted from statement filenames
+
+### 🔧 Technical Improvements
+- **Enhanced Transaction Parser**: Added intelligent year determination with cross-year support
+- **Fixed Single PDF Mode**: Replaced broken import with working implementation using existing modules
+- **Improved Date Handling**: Year extraction from filename patterns (Statement BPI Master YYYY-MM-DD.pdf)
+- **Statement Date Propagation**: Pass statement dates through processing pipeline for accurate file naming
+
+### 🐛 Critical Bug Fixes
+- **Fixed Year Assignment**: Transactions now get correct years from statement dates instead of current system year
+- **Fixed Single PDF Processing**: Resolved import error that prevented single PDF mode from working
+- **Fixed Cross-Year Edge Case**: December statements (e.g., 2024-12-12) now correctly keep their own year instead of previous year
+- **Fixed File Naming**: Output files now reflect actual statement periods instead of processing timestamps
+
+### 📁 Enhanced Output System
+**Before v2.1.0**: Files named with processing timestamp
+```
+For Import Statement BPI Master BPI_ECREDIT_CARD 2025-06-07 1630.csv
+```
+
+**After v2.1.0**: Files named with statement date(s)
+```
+Single PDF: For Import Statement BPI Master BPI_ECREDIT_CARD 2025-01-12.csv
+Batch: For Import Statement BPI Master BPI_ECREDIT_CARD 2024-01-14 to 2025-05-12.csv
+```
+
+### 🎯 Cross-Year Intelligence
+- **January Statements**: December transactions automatically assigned to previous year
+- **December Statements**: December transactions correctly keep the statement year
+- **Accurate Dating**: Eliminates manual date corrections for year-end processing
+
+### 💡 User Experience Improvements
+- **Meaningful File Names**: Easy identification of statement periods from file names
+- **Better Organization**: Files naturally sort by statement date instead of processing date
+- **Reduced Manual Work**: No more year corrections for cross-year transactions
+- **Working Single PDF Mode**: All processing modes now fully functional
+
+### ⚙️ Module Updates
+- **statement_finalizer.py**: Enhanced with statement date parameter and intelligent file naming
+- **transaction_parser.py**: Added cross-year logic and year determination methods
+- **batch_processor.py**: Updated to pass statement dates to finalizer
+- **main_enhanced.py**: Fixed single PDF mode with proper year extraction
+- **currency_handler.py**: Enhanced to handle pre-formatted dates with years
+
+### 🔄 Workflow Enhancements
+**Improved Processing Pipeline**:
+1. Extract year from PDF filename (Statement BPI Master 2025-01-12.pdf → 2025)
+2. Apply cross-year logic (December transactions in January statements → previous year)
+3. Generate meaningful output file names using actual statement dates
+4. Support both single PDF and batch processing with consistent naming
+
+### ⚠️ Breaking Changes
+None - All existing functionality enhanced while maintaining backward compatibility
+
+### 🧪 Testing Improvements
+- Verified cross-year logic with January 2025 statements containing December 2024 transactions
+- Tested statement date extraction from various filename formats
+- Validated single PDF processing workflow end-to-end
+
+---
+
 ## [2.0.0] - 2025-05-25
 
 ### 🚀 Major Features Added

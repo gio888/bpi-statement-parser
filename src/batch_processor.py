@@ -154,7 +154,9 @@ class BatchStatementProcessor:
                 # Extract and parse
                 self.pdf_extractor.file_path = file_path
                 text = self.pdf_extractor.extract_text()
-                transactions = self.transaction_parser.parse_transactions(text)
+                statement_year = statement_date.year
+                print(f"DEBUG BATCH: statement_date = {statement_date}, statement_year = {statement_year}")
+                transactions = self.transaction_parser.parse_transactions(text, statement_year)
                 
                 if transactions:
                     # Add statement date to each transaction
@@ -184,7 +186,7 @@ class BatchStatementProcessor:
         # Create final DataFrame
         if self.all_transactions:
             df = pd.DataFrame(self.all_transactions)
-            df = self.currency_handler.clean_dataframe(df)
+            df = self.currency_handler.clean_dataframe(df, statement_year)
             return df
         else:
             return pd.DataFrame()
@@ -305,7 +307,8 @@ def main():
         finalization_result = {}
         if main_csv_path:
             print(f"\n🔄 Auto-finalizing statement...")
-            finalization_result = finalize_statement_csv(main_csv_path)
+            statement_dates = [file_info['statement_date'] for file_info in processor.processed_files]
+            finalization_result = finalize_statement_csv(main_csv_path, statement_dates)
         
         # Show summary
         processor.show_summary_report(df, finalization_result)

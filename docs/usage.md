@@ -13,29 +13,35 @@ python src/main_enhanced.py
 python src/main_enhanced.py
 # Choose option 1 (Process single PDF)
 ```
-
 ## 📁 Output Files (4 Total)
 
-Every processing run automatically creates **4 ready-to-import files**:
+Every processing run automatically creates **4 ready-to-import files** with **statement date-based naming**:
 
 ### 1. Main CSV (Complete Data)
 ```
-For Import Statement BPI Master 2025-05-25-1630.csv
+Single PDF: For Import Statement BPI Master 2025-01-12.csv
+Batch: For Import Statement BPI Master 2024-01-14 to 2025-05-12.csv
 ```
 **Contains**: All transaction data + exchange rates + account mapping
 **Use for**: Analysis, record-keeping, backup
 
 ### 2. Individual Card CSVs (2 files)
 ```
-For Import Statement BPI Master BPI_ECREDIT_CARD 2025-05-25 1630.csv
-For Import Statement BPI Master BPI_GOLD_REWARDS_CARD 2025-05-25 1630.csv
+Single PDF:
+For Import Statement BPI Master BPI_ECREDIT_CARD 2025-01-12.csv
+For Import Statement BPI Master BPI_GOLD_REWARDS_CARD 2025-01-12.csv
+
+Batch:
+For Import Statement BPI Master BPI_ECREDIT_CARD 2024-01-14 to 2025-05-12.csv
+For Import Statement BPI Master BPI_GOLD_REWARDS_CARD 2024-01-14 to 2025-05-12.csv
 ```
 **Contains**: Post Date, Description, Amount, Target Account
 **Use for**: Separate import per card
 
 ### 3. Combined "Both" CSV
 ```
-For Import Statement BPI Master Both 2025-05-25 1630.csv
+Single PDF: For Import Statement BPI Master Both 2025-01-12.csv
+Batch: For Import Statement BPI Master Both 2024-01-14 to 2025-05-12.csv
 ```
 **Contains**: Date, Description, Amount, Account, Target Account
 **Use for**: Single unified import to accounting system
@@ -43,6 +49,45 @@ For Import Statement BPI Master Both 2025-05-25 1630.csv
 **Account Assignment**:
 - BPI ECREDIT CARD → `Liabilities:Credit Card:BPI Mastercard:e-credit`
 - BPI GOLD REWARDS CARD → `Liabilities:Credit Card:BPI Mastercard:Gold`
+
+## 🎯 Enhanced Features (v2.1.0)
+
+### Smart File Naming
+- **Statement Date-Based**: Files use actual statement dates instead of processing timestamps
+- **Easy Organization**: Files naturally sort by statement period
+- **Clear Identification**: Instantly see what period each file covers
+
+### Cross-Year Transaction Handling
+- **January Statements**: December transactions automatically get previous year
+  - Example: December 15 transaction in January 2025 statement → December 15, 2024
+- **December Statements**: December transactions correctly keep statement year
+  - Example: December 15 transaction in December 2024 statement → December 15, 2024
+- **Eliminates Manual Corrections**: No more year adjustments for year-end processing
+
+### Processing Modes
+- **Single PDF**: Perfect for testing or processing individual statements
+- **Batch Processing**: Efficient for processing multiple statements with date filtering
+
+## 🔧 File Naming Logic
+
+### Single PDF Processing
+```
+Input: Statement BPI Master 2025-01-12.pdf
+Output: For Import Statement BPI Master BPI_ECREDIT_CARD 2025-01-12.csv
+```
+
+### Batch Processing
+```
+Input: Multiple PDFs from 2024-01-14 to 2025-05-12
+Output: For Import Statement BPI Master BPI_ECREDIT_CARD 2024-01-14 to 2025-05-12.csv
+```
+
+### Cross-Year Example
+```
+Statement: Statement BPI Master 2025-01-12.pdf (January statement)
+Transaction: "December 15 Apple.Com/Bill"
+Result: December 15, 2024 (automatically assigned to previous year)
+```
 
 ## 🎯 Workflow
 
