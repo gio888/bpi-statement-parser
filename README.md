@@ -5,6 +5,8 @@ A comprehensive Python tool for extracting transaction data from BPI credit card
 ## 🎯 Features
 
 - ✅ **Automatic Account Mapping**: 98.7% success rate with intelligent categorization
+- ✅ **Statement Date-Based Naming**: Files named with actual statement dates for easy organization
+- ✅ **Cross-Year Transaction Handling**: December transactions in January statements correctly dated
 - ✅ **4-File Output System**: Main data + 2 individual cards + 1 combined import file
 - ✅ **Exchange Rate Calculation**: Automatic PHP conversion rates for foreign transactions
 - ✅ **Multi-card Support**: BPI Gold Rewards Card and BPI eCredit Card
@@ -63,24 +65,31 @@ A comprehensive Python tool for extracting transaction data from BPI credit card
 
 ## 📁 Output Files (4 Total)
 
-Every processing run creates **4 ready-to-use files**:
+Every processing run creates **4 ready-to-use files** with **statement date-based naming**:
 
 ### 1. **Main CSV** (comprehensive data)
 ```
-For Import Statement BPI Master 2025-05-25-1630.csv
+Single PDF: For Import Statement BPI Master 2025-01-12.csv
+Batch: For Import Statement BPI Master 2024-01-14 to 2025-05-12.csv
 ```
 **Columns**: Card, Transaction Date, Post Date, Description, Amount, Currency, Foreign Amount, Exchange Rate, Target Account, Statement Date
 
 ### 2. **Individual Card CSVs** (2 files)
 ```
-For Import Statement BPI Master BPI_ECREDIT_CARD 2025-05-25 1630.csv
-For Import Statement BPI Master BPI_GOLD_REWARDS_CARD 2025-05-25 1630.csv
+Single PDF:
+For Import Statement BPI Master BPI_ECREDIT_CARD 2025-01-12.csv
+For Import Statement BPI Master BPI_GOLD_REWARDS_CARD 2025-01-12.csv
+
+Batch:
+For Import Statement BPI Master BPI_ECREDIT_CARD 2024-01-14 to 2025-05-12.csv
+For Import Statement BPI Master BPI_GOLD_REWARDS_CARD 2024-01-14 to 2025-05-12.csv
 ```
 **Columns**: Post Date, Description, Amount, Target Account
 
 ### 3. **Combined "Both" CSV** (unified import)
 ```
-For Import Statement BPI Master Both 2025-05-25 1630.csv
+Single PDF: For Import Statement BPI Master Both 2025-01-12.csv
+Batch: For Import Statement BPI Master Both 2024-01-14 to 2025-05-12.csv
 ```
 **Columns**: Date, Description, Amount, Account, Target Account
 

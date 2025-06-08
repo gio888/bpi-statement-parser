@@ -26,14 +26,14 @@ class CurrencyHandler:
             return round(amount / foreign_amount, 4)
         return None
     
-    def clean_dataframe(self, df):
+    def clean_dataframe(self, df, statement_year=None):
         """Clean and format DataFrame with exchange rates"""
-        current_year = datetime.now().year
+        year_to_use = statement_year or datetime.now().year
         
         # Convert dates
         for date_col in ['transaction_date', 'post_date']:
             if date_col in df.columns:
-                df[date_col] = df[date_col].apply(lambda x: self._parse_date(x, current_year))
+                df[date_col] = df[date_col].apply(lambda x: self._parse_date(x, year_to_use))
         
         # Add Exchange Rate column
         if 'amount' in df.columns and 'foreign_amount' in df.columns:
@@ -52,15 +52,25 @@ class CurrencyHandler:
         return df
     
     def _parse_date(self, date_str, year):
-        """Parse date string"""
+        """Parse date string - handles dates with or without year"""
         if not date_str:
             return None
-            
+    
+        # First, try parsing as complete date (already has year)
         try:
-            return datetime.strptime(f"{date_str} {year}", "%b %d %Y")
+            return datetime.strptime(date_str, "%B %d %Y")  # "May 1 2025"
         except ValueError:
             try:
-                return datetime.strptime(f"{date_str} {year}", "%B %d %Y")
+                return datetime.strptime(date_str, "%b %d %Y")  # "May 1 2025" 
+            except ValueError:
+                pass
+    
+        # Fallback: try adding year (old format)
+        try:
+            return datetime.strptime(f"{date_str} {year}", "%b %d %Y")  # "May 1" + year
+        except ValueError:
+            try:
+                return datetime.strptime(f"{date_str} {year}", "%B %d %Y")  # "May 1" + year
             except ValueError:
                 return None
     

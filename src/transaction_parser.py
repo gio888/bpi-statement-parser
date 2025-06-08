@@ -1,5 +1,6 @@
 # transaction_parser.py - Final version with normalizer (drop-in replacement)
 import re
+from datetime import datetime  
 
 class SimplePDFNormalizer:
     """Simple, reliable PDF text normalizer"""
@@ -77,7 +78,7 @@ class TransactionParser:
             r'^(Date|Transaction|Post Date|Description|Amount)\s*$'
         ]
     
-    def parse_transactions(self, text):
+    def parse_transactions(self, text, statement_year=None):
         """Parse transactions with normalization"""
         transactions = []
         
@@ -86,7 +87,7 @@ class TransactionParser:
         
         for card_name, section_text in card_sections.items():
             print(f"\n🔍 Processing {card_name}...")
-            card_transactions = self._parse_card_section(section_text, card_name)
+            card_transactions = self._parse_card_section(section_text, card_name, statement_year)
             transactions.extend(card_transactions)
             print(f"   Found {len(card_transactions)} transactions")
         
@@ -135,7 +136,7 @@ class TransactionParser:
             
         return sections
     
-    def _parse_card_section(self, section_text, card_name):
+    def _parse_card_section(self, section_text, card_name, statement_year=None):
         """Parse transactions from card section"""
         transactions = []
         lines = section_text.split('\n')
@@ -152,7 +153,7 @@ class TransactionParser:
             norm_line = self.normalizer.normalize_line(line)
             
             # Try single-line transaction
-            transaction = self._parse_single_line(norm_line, card_name)
+            transaction = self._parse_single_line(norm_line, card_name, statement_year)
             if transaction:
                 transactions.append(transaction)
                 print(f"   ✓ {transaction['currency']}: {transaction['description'][:30]}... - ₱{transaction['amount']}")
@@ -164,7 +165,7 @@ class TransactionParser:
                 next_line = lines[i + 1].strip()
                 norm_next = self.normalizer.normalize_line(next_line)
                 
-                transaction = self._parse_two_lines(norm_line, norm_next, card_name)
+                transaction = self._parse_two_lines(norm_line, norm_next, card_name, statement_year)
                 if transaction:
                     transactions.append(transaction)
                     print(f"   ✓ {transaction['currency']}: {transaction['description'][:30]}... - ₱{transaction['amount']}")
@@ -174,27 +175,63 @@ class TransactionParser:
             i += 1
         
         return transactions
-    
-    def _parse_single_line(self, line, card_name):
-        """Parse normalized single-line transaction"""
+
+
+    def _determine_transaction_year(self, month_name, statement_year, statement_month=None):
+        """
+        Determine correct year for transaction based on month and statement context
+        """
+        if not month_name or not statement_year:
+            return statement_year
+        
+        try:
+            # Convert month name to number
+            month_num = datetime.strptime(month_name, "%B").month
+        except ValueError:
+            try:
+                month_num = datetime.strptime(month_name, "%b").month
+            except ValueError:
+                return statement_year
+        
+        # Rule: December transactions get previous year ONLY if statement is January
+        if month_num == 12 and statement_month == 1:
+            return statement_year - 1
+        
+        return statement_year
+        
+    def _parse_single_line(self, line, card_name, statement_year=None):
+        """Parse normalized single-line transaction with smart year assignment"""
         # Simple pattern that works after normalization
         pattern = r'^([A-Za-z]+)\s+(\d{1,2})\s+([A-Za-z]+)\s+(\d{1,2})\s+(.+?)\s+(-?\d{1,3}(?:,\d{3})*\.\d{2})$'
         match = re.match(pattern, line)
         
         if match:
-            return {
+            transaction_month = match.group(1)  # e.g., "December"
+            post_month = match.group(3)         # e.g., "December" 
+            
+            # Determine correct years for both dates
+            transaction_year = self._determine_transaction_year(transaction_month, statement_year)
+            post_year = self._determine_transaction_year(post_month, statement_year)
+            
+            transaction = {
                 'card': card_name,
-                'transaction_date': f"{match.group(1)} {match.group(2)}",
-                'post_date': f"{match.group(3)} {match.group(4)}",
+                'transaction_date': f"{transaction_month} {match.group(2)} {transaction_year}",
+                'post_date': f"{post_month} {match.group(4)} {post_year}",
                 'description': match.group(5).strip(),
                 'amount': float(match.group(6).replace(',', '')),
                 'currency': 'PHP',
                 'foreign_amount': None
             }
+            
+            # Debug output (you can remove this later)
+            print(f"DEBUG: Created transaction_date: '{transaction['transaction_date']}' (month: {transaction_month}, year: {transaction_year})")
+            print(f"DEBUG: statement_year passed: {statement_year}")
+            
+            return transaction
         return None
     
-    def _parse_two_lines(self, line1, line2, card_name):
-        """Parse normalized two-line foreign currency"""
+    def _parse_two_lines(self, line1, line2, card_name, statement_year=None):
+        """Parse normalized two-line foreign currency with smart year assignment"""
         # After normalization, this should be reliable
         pattern1 = r'^([A-Za-z]+)\s+(\d{1,2})\s+([A-Za-z]+)\s+(\d{1,2})\s+(.+?)\s+([A-Z]{2,3})$'
         pattern2 = r'^U\.S\.Dollar\s+([\d.,]+)\s+(\d{1,3}(?:,\d{3})*\.\d{2})$'
@@ -203,19 +240,26 @@ class TransactionParser:
         match2 = re.match(pattern2, line2)
         
         if match1 and match2:
+            transaction_month = match1.group(1)  # e.g., "December"
+            post_month = match1.group(3)         # e.g., "December"
+            
+            # Determine correct years for both dates
+            transaction_year = self._determine_transaction_year(transaction_month, statement_year)
+            post_year = self._determine_transaction_year(post_month, statement_year)
+            
             country_code = match1.group(6)
             currency = 'USD' if country_code == 'US' else ('SGD' if country_code == 'SG' else 'NZD')
             
             return {
                 'card': card_name,
-                'transaction_date': f"{match1.group(1)} {match1.group(2)}",
-                'post_date': f"{match1.group(3)} {match1.group(4)}",
+                'transaction_date': f"{transaction_month} {match1.group(2)} {transaction_year}",
+                'post_date': f"{post_month} {match1.group(4)} {post_year}",
                 'description': match1.group(5).strip(),
                 'amount': float(match2.group(2).replace(',', '')),
                 'currency': currency,
                 'foreign_amount': float(match2.group(1).replace(',', ''))
             }
-        return None
+        return None    
     
     def _should_skip(self, line):
         """Check if line should be skipped"""
