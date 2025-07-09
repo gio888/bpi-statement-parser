@@ -118,8 +118,8 @@ def test_account_mapping(csv_path, accounts_csv_path=None):
 def main():
     """Main test function"""
     # Default paths
-    csv_path = "/home/user/Library/CloudStorage/GoogleDrive-user@example.com/My Drive/Money/BPI/For Import Statement BPI Master 2025-05-25-1413.csv"
-    accounts_csv_path = "/path/to/project/data/input/Accounts List 2024-07.csv"
+    csv_path = os.environ.get('BPI_TEST_CSV', './data/output/For Import Statement BPI Master 2025-05-25-1413.csv')
+    accounts_csv_path = os.environ.get('BPI_ACCOUNTS_CSV', './data/input/Accounts List 2024-07.csv')
     
     # Allow user to specify different paths
     import sys

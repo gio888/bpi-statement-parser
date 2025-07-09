@@ -12,12 +12,12 @@ class StatementFinalizer:
     def __init__(self, accounts_csv_path: str = None):
         # Default accounts CSV path
         if not accounts_csv_path:
-            accounts_csv_path = "/path/to/project/data/input/Accounts List 2024-07.csv"
+            accounts_csv_path = "/Users/gio/Code/bpi-master-statement-parser/data/input/Accounts List 2024-07.csv"
         
         self.account_mapper = AccountMapper(accounts_csv_path)
         
         # Default output folder (same as PDFs)
-        self.output_folder = "/home/user/Library/CloudStorage/GoogleDrive-user@example.com/My Drive/Money/BPI/"
+        self.output_folder = "/Users/gio/Library/CloudStorage/GoogleDrive-gbacareza@gmail.com/My Drive/Money/BPI/"
     
     def finalize_statement(self, main_csv_path: str, statement_dates: list = None) -> dict:
         """

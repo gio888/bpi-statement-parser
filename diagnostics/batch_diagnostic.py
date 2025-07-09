@@ -14,7 +14,7 @@ def diagnose_batch_pdfs():
     print("=" * 80)
     
     # Configuration
-    pdf_folder = "/home/user/Library/CloudStorage/GoogleDrive-user@example.com/My Drive/Money/BPI/"
+    pdf_folder = "/Users/gio/Library/CloudStorage/GoogleDrive-gbacareza@gmail.com/My Drive/Money/BPI/"
     
     # Get cutoff date
     while True:

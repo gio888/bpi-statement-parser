@@ -34,7 +34,7 @@ def single_pdf_mode():
     pdf_path = input("Enter PDF file path (or press Enter for default): ").strip()
     
     if not pdf_path:
-        pdf_path = "/home/user/Library/CloudStorage/GoogleDrive-user@example.com/My Drive/Money/BPI/Statement BPI Master 2025-01-12.pdf"
+        pdf_path = os.environ.get('BPI_DEFAULT_PDF', './data/pdf/Statement BPI Master 2025-01-12.pdf')
         print(f"Using default: {pdf_path}")
     
     # Check if file exists
@@ -91,7 +91,7 @@ def single_pdf_mode():
         df_clean = currency_handler.clean_dataframe(df, statement_year)
         
         # Step 4: Save main CSV
-        output_folder = "/home/user/Library/CloudStorage/GoogleDrive-user@example.com/My Drive/Money/BPI/"
+        output_folder = os.environ.get('BPI_OUTPUT_FOLDER', './data/output/')
         timestamp = datetime.now().strftime("%Y-%m-%d-%H%M")
         main_filename = f"For Import Statement BPI Master Single {timestamp}.csv"
         main_csv_path = os.path.join(output_folder, main_filename)

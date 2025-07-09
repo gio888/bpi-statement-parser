@@ -9,7 +9,7 @@ def test_reformatted_pdf():
     print("🧪 TESTING REFORMATTED 2024-08-12 PDF")
     print("="*60)
     
-    pdf_path = "/home/user/Library/CloudStorage/GoogleDrive-user@example.com/My Drive/Money/BPI/Statement BPI Master 2024-08-12.pdf"
+    pdf_path = "/Users/gio/Library/CloudStorage/GoogleDrive-gbacareza@gmail.com/My Drive/Money/BPI/Statement BPI Master 2024-08-12.pdf"
     
     try:
         # Extract text

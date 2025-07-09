@@ -275,8 +275,8 @@ def main():
     print("="*80)
     
     # Configuration
-    pdf_folder = "/home/user/Library/CloudStorage/GoogleDrive-user@example.com/My Drive/Money/BPI/"
-    output_folder = "/home/user/Library/CloudStorage/GoogleDrive-user@example.com/My Drive/Money/BPI/"
+    pdf_folder = os.environ.get('BPI_PDF_FOLDER', './data/pdf/')
+    output_folder = os.environ.get('BPI_OUTPUT_FOLDER', './data/output/')
     
     try:
         # Initialize processor

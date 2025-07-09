@@ -8,7 +8,7 @@ def check_failed_pdf():
     print("🔍 CHECKING FAILED PDF: 2024-08-12")
     print("="*60)
     
-    pdf_path = "/home/user/Library/CloudStorage/GoogleDrive-user@example.com/My Drive/Money/BPI/Statement BPI Master 2024-08-12.pdf"
+    pdf_path = "/Users/gio/Library/CloudStorage/GoogleDrive-gbacareza@gmail.com/My Drive/Money/BPI/Statement BPI Master 2024-08-12.pdf"
     
     try:
         extractor = PDFExtractor(pdf_path)

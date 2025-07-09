@@ -9,7 +9,7 @@ def analyze_card_sections():
     print("🔍 DETAILED CARD SECTION ANALYSIS")
     print("="*80)
     
-    pdf_path = "/home/user/Library/CloudStorage/GoogleDrive-user@example.com/My Drive/Money/BPI/Statement BPI Master 2023-10-12.pdf"
+    pdf_path = "/Users/gio/Library/CloudStorage/GoogleDrive-gbacareza@gmail.com/My Drive/Money/BPI/Statement BPI Master 2023-10-12.pdf"
     
     try:
         # Extract text

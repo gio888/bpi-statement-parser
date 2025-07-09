@@ -50,7 +50,7 @@ def show_extracted_text(pdf_path, max_chars=2000):
 
 if __name__ == "__main__":
     # Test failed file
-    failed_pdf = "/home/user/Library/CloudStorage/GoogleDrive-user@example.com/My Drive/Money/BPI/Statement BPI Master 2023-10-12.pdf"
+    failed_pdf = "/Users/gio/Library/CloudStorage/GoogleDrive-gbacareza@gmail.com/My Drive/Money/BPI/Statement BPI Master 2023-10-12.pdf"
     show_extracted_text(failed_pdf)
     
     print("\n" + "="*100)
@@ -58,5 +58,5 @@ if __name__ == "__main__":
     print("="*100)
     
     # Test working file for comparison
-    working_pdf = "/home/user/Library/CloudStorage/GoogleDrive-user@example.com/My Drive/Money/BPI/Statement BPI Master 2025-05-12.pdf"
+    working_pdf = "/Users/gio/Library/CloudStorage/GoogleDrive-gbacareza@gmail.com/My Drive/Money/BPI/Statement BPI Master 2025-05-12.pdf"
     show_extracted_text(working_pdf, max_chars=1000)  # Shorter for comparison
