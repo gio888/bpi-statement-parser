@@ -1,0 +1,27 @@
+Account Name,Account Type,Description,Keywords
+Assets:Bank:BPI Savings,Asset,BPI Savings Account,savings
+Liabilities:Credit Card:BPI Mastercard:Gold,Liability,BPI Gold Rewards Card,gold rewards
+Liabilities:Credit Card:BPI Mastercard:e-credit,Liability,BPI e-Credit Card,ecredit
+Expenses:Food:Groceries,Expense,Grocery shopping,grocery store market metromart s&r
+Expenses:Food:Dining,Expense,Restaurants and dining out,restaurant cafe dining food
+Expenses:Transportation,Expense,Transportation costs,grab taxi uber transport
+Expenses:Utilities:Electric,Expense,Electricity bills,meralco electric power
+Expenses:Utilities:Water,Expense,Water bills,maynilad water
+Expenses:Utilities:Internet,Expense,Internet and phone bills,pldt globe smart converge
+Expenses:Utilities:Mobile,Expense,Mobile phone bills,smart globe sun
+Expenses:Entertainment:Music/Movies,Expense,Entertainment subscriptions,netflix spotify apple music youtube
+Expenses:Entertainment:Recreation,Expense,Games and recreation,nintendo playstation xbox steam
+Expenses:Education:Books,Expense,Books and learning materials,audible kindle amazon books
+Expenses:Education:Newspaper & Magazines,Expense,News subscriptions,wsj economist newspaper magazine
+Expenses:Professional Development & Productivity,Expense,Professional tools and services,google cloud microsoft notion
+Expenses:Health,Expense,Health and medical expenses,pharmacy doctor hospital clinic
+Expenses:Clothes,Expense,Clothing and apparel,uniqlo h&m zara shein
+Expenses:Household Supplies,Expense,Household items and supplies,shopee lazada amazon household
+Expenses:Banking Costs:Bank Service Charge,Expense,Banking fees and charges,fee charge reversal
+Expenses:Professional Fees,Expense,Professional services,accounting legal consulting
+Expenses:Auto:Gas,Expense,Gasoline and fuel,shell petron caltex gas
+Expenses:Auto:Maintenance,Expense,Car maintenance and repairs,toyota honda repair maintenance
+Expenses:Travel:Fare,Expense,Travel and transportation fares,airline hotel booking travel
+Expenses:Childcare:Books,Expense,Children's books and materials,epic getepic children kids
+Assets:Investments:Investment in Business,Asset,Business investments,domain hosting godaddy business
+Manual Review,Unknown,Transactions requiring manual review,

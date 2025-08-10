@@ -13,8 +13,13 @@ def diagnose_batch_pdfs():
     print("BATCH PDF DIAGNOSTIC TOOL")
     print("=" * 80)
     
-    # Configuration
-    pdf_folder = "/Users/gio/Library/CloudStorage/GoogleDrive-gbacareza@gmail.com/My Drive/Money/BPI/"
+    # Configuration - get from command line or use default
+    if len(sys.argv) > 1:
+        pdf_folder = sys.argv[1]
+    else:
+        pdf_folder = "./data/input/"
+        print(f"Usage: python {sys.argv[0]} <pdf_folder>")
+        print(f"Using default folder: {pdf_folder}")
     
     # Get cutoff date
     while True:

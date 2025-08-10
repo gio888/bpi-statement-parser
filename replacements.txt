@@ -1,0 +1,5 @@
+gbacareza@gmail.com==>user@example.com
+/Users/gio/Library/CloudStorage/GoogleDrive-gbacareza@gmail.com/My Drive/Money/BPI==>/path/to/pdf/files
+/Users/gio/Code/bpi-master-statement-parser==>/path/to/project
+/Users/gio==>/home/user
+EOF < /dev/null

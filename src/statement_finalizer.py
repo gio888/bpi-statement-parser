@@ -7,17 +7,24 @@ from datetime import datetime
 # Add parent directory to path so we can import account_mapper from main folder
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from account_mapper import AccountMapper
+from src.config_loader import get_config
 
 class StatementFinalizer:
     def __init__(self, accounts_csv_path: str = None):
-        # Default accounts CSV path
+        # Load configuration
+        config = get_config()
+        
+        # Use provided path or get from config
         if not accounts_csv_path:
-            accounts_csv_path = "/Users/gio/Code/bpi-master-statement-parser/data/input/Accounts List 2024-07.csv"
+            accounts_csv_path = config.get_accounts_csv_path()
         
         self.account_mapper = AccountMapper(accounts_csv_path)
         
-        # Default output folder (same as PDFs)
-        self.output_folder = "/Users/gio/Library/CloudStorage/GoogleDrive-gbacareza@gmail.com/My Drive/Money/BPI/"
+        # Get output folder from config
+        self.output_folder = config.get_output_folder()
+        
+        # Store config for later use
+        self.config = config
     
     def finalize_statement(self, main_csv_path: str, statement_dates: list = None) -> dict:
         """
@@ -178,13 +185,9 @@ class StatementFinalizer:
             combined_data = []
             
             for _, row in df.iterrows():
-                # Map card to account
-                if 'BPI ECREDIT CARD' in str(row['Card']).upper():
-                    account = "Liabilities:Credit Card:BPI Mastercard:e-credit"
-                elif 'BPI GOLD REWARDS CARD' in str(row['Card']).upper():
-                    account = "Liabilities:Credit Card:BPI Mastercard:Gold"
-                else:
-                    account = "Liabilities:Credit Card:BPI Mastercard"  # fallback
+                # Map card to account using config
+                card_name = str(row['Card'])
+                account = self.config.get_card_account(card_name)
                 
                 combined_data.append({
                     'Date': row['Post Date'],

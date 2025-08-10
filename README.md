@@ -41,11 +41,19 @@ A comprehensive Python tool for extracting transaction data from BPI credit card
    pip install -r requirements.txt
    ```
 
-4. **Place your accounts list** (optional for enhanced mapping)
+4. **Run the setup wizard** (first-time setup)
    ```bash
-   # Add your chart of accounts CSV to:
-   data/input/Accounts List 2024-07.csv
+   python setup.py
    ```
+   
+   The setup wizard will:
+   - Create your personal configuration folder
+   - Set up your PDF input/output paths
+   - Configure credit card to account mappings
+   - Generate template files for transaction rules
+   - Test your configuration
+
+   Your personal configuration is stored in `config/` and is automatically excluded from version control.
 
 ### Usage
 

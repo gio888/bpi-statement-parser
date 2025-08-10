@@ -1,0 +1,125 @@
+{
+  "description": "Custom transaction categorization rules",
+  "version": "1.0",
+  "rules": {
+    "exact_matches": {
+      "comment": "Exact merchant name matches (case-insensitive)",
+      "mappings": {
+        "Payment -Thank You": "Liabilities:Credit Card:BPI Mastercard",
+        "Apple.Com/Bill Itunes.Com": "Expenses:Entertainment:Music/Movies",
+        "Netflix.Com": "Expenses:Entertainment:Music/Movies",
+        "Google *Youtubepremium": "Expenses:Entertainment:Music/Movies",
+        "Spotify": "Expenses:Entertainment:Music/Movies",
+        "Grab": "Expenses:Transportation",
+        "Metromart": "Expenses:Food:Groceries",
+        "S&R Membership Shopping": "Expenses:Food:Groceries",
+        "Starbucks": "Expenses:Food:Coffee",
+        "Shell": "Expenses:Auto:Gas",
+        "Petron": "Expenses:Auto:Gas",
+        "Meralco": "Expenses:Utilities:Electric",
+        "Maynilad": "Expenses:Utilities:Water",
+        "PLDT": "Expenses:Utilities:Internet",
+        "Globe": "Expenses:Utilities:Mobile",
+        "Smart": "Expenses:Utilities:Mobile"
+      }
+    },
+    "partial_matches": {
+      "comment": "Partial merchant name matches (contains keyword)",
+      "mappings": {
+        "Amazon": "Expenses:Household Supplies",
+        "Shopee": "Expenses:Household Supplies",
+        "Lazada": "Expenses:Household Supplies",
+        "Audible": "Expenses:Education:Books",
+        "Kindle": "Expenses:Education:Books",
+        "Restaurant": "Expenses:Food:Dining",
+        "Cafe": "Expenses:Food:Dining",
+        "Pharmacy": "Expenses:Health",
+        "Clinic": "Expenses:Health",
+        "Hospital": "Expenses:Health",
+        "Hotel": "Expenses:Travel:Accommodation",
+        "Airlines": "Expenses:Travel:Fare",
+        "Booking": "Expenses:Travel:Accommodation"
+      }
+    },
+    "regex_patterns": {
+      "comment": "Regular expression patterns for complex matching",
+      "patterns": [
+        {
+          "pattern": "^Reversal.*Finance Charges",
+          "category": "Expenses:Banking Costs:Bank Service Charge",
+          "description": "Bank fee reversals"
+        },
+        {
+          "pattern": "^ATM.*Withdrawal",
+          "category": "Assets:Bank:Cash",
+          "description": "ATM cash withdrawals"
+        },
+        {
+          "pattern": "^Online Transfer to.*",
+          "category": "Assets:Bank:Transfers",
+          "description": "Online banking transfers"
+        },
+        {
+          "pattern": ".*\\bGas\\b.*",
+          "category": "Expenses:Auto:Gas",
+          "description": "Gas station purchases"
+        }
+      ]
+    },
+    "amount_rules": {
+      "comment": "Rules based on transaction amounts",
+      "rules": [
+        {
+          "min_amount": 10000,
+          "max_amount": null,
+          "category_override": "Manual Review",
+          "description": "Flag large transactions for review"
+        },
+        {
+          "min_amount": null,
+          "max_amount": 100,
+          "contains": ["fee", "charge"],
+          "category": "Expenses:Banking Costs:Bank Service Charge",
+          "description": "Small fees and charges"
+        }
+      ]
+    },
+    "date_rules": {
+      "comment": "Rules based on transaction dates",
+      "recurring": [
+        {
+          "day_of_month": 1,
+          "merchant_contains": "Spotify",
+          "category": "Expenses:Entertainment:Music/Movies",
+          "description": "Monthly Spotify subscription"
+        },
+        {
+          "day_of_month": 15,
+          "merchant_contains": "Netflix",
+          "category": "Expenses:Entertainment:Music/Movies",
+          "description": "Monthly Netflix subscription"
+        }
+      ]
+    },
+    "priority_order": {
+      "comment": "Order in which rules are applied (1 = highest priority)",
+      "order": [
+        "exact_matches",
+        "regex_patterns",
+        "amount_rules",
+        "date_rules",
+        "partial_matches"
+      ]
+    },
+    "fallback": {
+      "comment": "Default category if no rules match",
+      "category": "Manual Review"
+    }
+  },
+  "statistics": {
+    "comment": "Track rule effectiveness (updated automatically)",
+    "total_processed": 0,
+    "rule_matches": {},
+    "manual_review_count": 0
+  }
+}

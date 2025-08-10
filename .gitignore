@@ -32,6 +32,7 @@ ENV/
 *.swp
 *.swo
 *~
+.history/
 
 # OS
 .DS_Store
@@ -45,6 +46,7 @@ data/
 
 # Sensitive configuration
 config.py
+config/
 .env
 
 # Any PDF files anywhere in the project

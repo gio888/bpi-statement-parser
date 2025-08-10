@@ -10,6 +10,7 @@ from pdf_extractor import PDFExtractor
 from transaction_parser import TransactionParser
 from currency_handler import CurrencyHandler
 from statement_finalizer import finalize_statement_csv
+from config_loader import get_config
 
 class BatchStatementProcessor:
     def __init__(self, pdf_folder: str, output_folder: str):
@@ -274,9 +275,10 @@ def main():
     print("Process multiple PDF statements with automatic account mapping")
     print("="*80)
     
-    # Configuration
-    pdf_folder = os.environ.get('BPI_PDF_FOLDER', './data/pdf/')
-    output_folder = os.environ.get('BPI_OUTPUT_FOLDER', './data/output/')
+    # Load configuration
+    config = get_config()
+    pdf_folder = config.get('PDF_INPUT_FOLDER', './data/input')
+    output_folder = config.get_output_folder()
     
     try:
         # Initialize processor

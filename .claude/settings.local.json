@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(grep:*)",
+      "Bash(chmod:*)",
+      "Bash(git ls-tree:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(curl:*)",
+      "Bash(brew install:*)"
+    ],
+    "deny": []
+  }
+}

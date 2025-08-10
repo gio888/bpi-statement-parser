@@ -49,14 +49,20 @@ def show_extracted_text(pdf_path, max_chars=2000):
         print(f"❌ Error: {e}")
 
 if __name__ == "__main__":
-    # Test failed file
-    failed_pdf = "/Users/gio/Library/CloudStorage/GoogleDrive-gbacareza@gmail.com/My Drive/Money/BPI/Statement BPI Master 2023-10-12.pdf"
+    # Get PDF paths from command line or use defaults
+    if len(sys.argv) > 2:
+        failed_pdf = sys.argv[1]
+        working_pdf = sys.argv[2]
+    else:
+        failed_pdf = "./data/input/Statement BPI Master 2023-10-12.pdf"
+        working_pdf = "./data/input/Statement BPI Master 2025-05-12.pdf"
+        print(f"Usage: python {sys.argv[0]} <failed_pdf> <working_pdf>")
+        print(f"Using defaults: {failed_pdf} and {working_pdf}")
+    
     show_extracted_text(failed_pdf)
     
     print("\n" + "="*100)
     print("COMPARISON WITH WORKING FILE:")
     print("="*100)
     
-    # Test working file for comparison
-    working_pdf = "/Users/gio/Library/CloudStorage/GoogleDrive-gbacareza@gmail.com/My Drive/Money/BPI/Statement BPI Master 2025-05-12.pdf"
     show_extracted_text(working_pdf, max_chars=1000)  # Shorter for comparison

@@ -9,7 +9,13 @@ def test_reformatted_pdf():
     print("🧪 TESTING REFORMATTED 2024-08-12 PDF")
     print("="*60)
     
-    pdf_path = "/Users/gio/Library/CloudStorage/GoogleDrive-gbacareza@gmail.com/My Drive/Money/BPI/Statement BPI Master 2024-08-12.pdf"
+    # Get PDF path from command line or use default
+    if len(sys.argv) > 1:
+        pdf_path = sys.argv[1]
+    else:
+        pdf_path = "./data/input/Statement BPI Master 2024-08-12.pdf"
+        print(f"Usage: python {sys.argv[0]} <pdf_path>")
+        print(f"Using default: {pdf_path}")
     
     try:
         # Extract text
