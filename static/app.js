@@ -217,9 +217,18 @@ function showResults(data) {
     
     // Create download buttons
     const downloadButtons = document.getElementById('download-buttons');
+    const downloadInfo = document.getElementById('download-info');
+    const downloadAllBtn = document.getElementById('download-all-btn');
     downloadButtons.innerHTML = '';
     
     if (data.output_files && data.output_files.length > 0) {
+        // Update the file count dynamically
+        const fileCount = data.output_files.length;
+        downloadInfo.textContent = `${fileCount} CSV file${fileCount !== 1 ? 's have' : ' has'} been generated for easy import to your accounting software:`;
+        
+        // Show download all button
+        downloadAllBtn.style.display = 'inline-flex';
+        
         data.output_files.forEach(file => {
             const downloadBtn = document.createElement('a');
             downloadBtn.className = 'download-btn';
@@ -261,7 +270,15 @@ function showResults(data) {
             downloadButtons.appendChild(downloadBtn);
         });
     } else {
-        downloadButtons.innerHTML = '<p>No files were generated. Please check the errors above.</p>';
+        // No files generated - show appropriate message
+        downloadInfo.textContent = 'No CSV files were generated.';
+        downloadAllBtn.style.display = 'none';
+        
+        if (data.total_transactions === 0) {
+            downloadButtons.innerHTML = '<p>No transactions were found in the uploaded statement(s). Please verify the PDF format is supported.</p>';
+        } else {
+            downloadButtons.innerHTML = '<p>Files could not be generated. Please check the errors above.</p>';
+        }
     }
 }
 

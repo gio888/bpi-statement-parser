@@ -10,7 +10,17 @@ from account_mapper import AccountMapper
 from src.config_loader import get_config
 
 class StatementFinalizer:
-    def __init__(self, accounts_csv_path: str = None):
+    # Card name mapping for clean filenames
+    CARD_NAME_MAPPING = {
+        'BPI GOLD REWARDS CARD': 'Gold',
+        'BPI ECREDIT CARD': 'Ecredit',
+        'BPI_GOLD_REWARDS_CARD': 'Gold',
+        'BPI_ECREDIT_CARD': 'Ecredit',
+        'GOLD': 'Gold',
+        'ECREDIT': 'Ecredit'
+    }
+    
+    def __init__(self, accounts_csv_path: str = None, output_folder: str = None):
         # Load configuration
         config = get_config()
         
@@ -20,8 +30,11 @@ class StatementFinalizer:
         
         self.account_mapper = AccountMapper(accounts_csv_path)
         
-        # Get output folder from config
-        self.output_folder = config.get_output_folder()
+        # Use provided output folder or get from config
+        if output_folder:
+            self.output_folder = output_folder
+        else:
+            self.output_folder = config.get_output_folder()
         
         # Store config for later use
         self.config = config
@@ -103,8 +116,8 @@ class StatementFinalizer:
             print(f"   ❌ Missing columns: {missing_cols}")
             return created_files
         
-        # Generate date suffix for filenames
-        date_suffix = self._generate_date_suffix(statement_dates)
+        # Generate date prefix for new naming convention
+        date_prefix = self._generate_date_prefix(statement_dates)
         
         # Group by card
         cards = df['Card'].unique()
@@ -117,9 +130,9 @@ class StatementFinalizer:
             # Select required columns: Post Date, Description, Amount, Target Account
             card_df = card_data[['Post Date', 'Description', 'Amount', 'Target Account']].copy()
             
-            # Generate filename with date suffix
-            safe_card_name = card.replace(' ', '_').replace(':', '').replace('/', '')
-            filename = f"For Import Statement BPI Master {safe_card_name} {date_suffix}.csv"
+            # Generate filename with new convention: YYYY-MM-DD_Statement_BPI_Mastercard_CardType.csv
+            clean_card_name = self._normalize_card_name(card)
+            filename = f"{date_prefix}_Statement_BPI_Mastercard_{clean_card_name}.csv"
             filepath = os.path.join(self.output_folder, filename)
             
             # Ensure output folder exists
@@ -133,12 +146,55 @@ class StatementFinalizer:
             except Exception as e:
                 print(f"   ❌ Error saving {filename}: {e}")
         
-        # 2. Create combined "Both" CSV with Account column
-        combined_df = self._create_combined_csv(df, date_suffix)
+        # 2. Create combined CSV with Account column
+        combined_df = self._create_combined_csv(df, date_prefix)
         if combined_df is not None:
             created_files.append(combined_df)
         
         return created_files
+    
+    def _normalize_card_name(self, card_name: str) -> str:
+        """Convert card name to clean format for filenames"""
+        # Try exact mapping first
+        if card_name.upper() in self.CARD_NAME_MAPPING:
+            return self.CARD_NAME_MAPPING[card_name.upper()]
+        
+        # Try partial matching
+        card_upper = card_name.upper()
+        for key, value in self.CARD_NAME_MAPPING.items():
+            if key in card_upper:
+                return value
+        
+        # Fallback: clean the original name
+        return card_name.replace(' ', '').replace('_', '').title()
+    
+    def _generate_date_prefix(self, statement_dates: list) -> str:
+        """Generate date prefix for new naming convention: YYYY-MM-DD"""
+        if not statement_dates:
+            # Fallback to current date if no dates provided
+            return datetime.now().strftime("%Y-%m-%d")
+        
+        # Convert to date objects if they're strings
+        dates = []
+        for date_item in statement_dates:
+            if isinstance(date_item, str):
+                try:
+                    # Try parsing YYYY-MM-DD format
+                    parsed_date = datetime.strptime(date_item, "%Y-%m-%d").date()
+                    dates.append(parsed_date)
+                except ValueError:
+                    print(f"   ⚠️  Could not parse date: {date_item}")
+                    continue
+            else:
+                dates.append(date_item)
+        
+        if not dates:
+            # Fallback to current date
+            return datetime.now().strftime("%Y-%m-%d")
+        
+        # Sort dates and use the first (earliest) date
+        dates.sort()
+        return dates[0].strftime("%Y-%m-%d")
     
     def _generate_date_suffix(self, statement_dates: list) -> str:
         """Generate date suffix for filenames based on statement dates"""
@@ -176,9 +232,9 @@ class StatementFinalizer:
             latest = dates[-1].strftime("%Y-%m-%d")
             return f"{earliest} to {latest}"
     
-    def _create_combined_csv(self, df: pd.DataFrame, date_suffix: str) -> str:
+    def _create_combined_csv(self, df: pd.DataFrame, date_prefix: str) -> str:
         """Create combined CSV with Account column based on card"""
-        print(f"   🔗 Creating combined 'Both' CSV...")
+        print(f"   🔗 Creating combined CSV...")
         
         try:
             # Create combined dataframe
@@ -200,8 +256,8 @@ class StatementFinalizer:
             # Create DataFrame
             combined_df = pd.DataFrame(combined_data)
             
-            # Generate filename with date suffix
-            filename = f"For Import Statement BPI Master Both {date_suffix}.csv"
+            # Generate filename with new convention: YYYY-MM-DD_Statement_BPI_Mastercard_Combined.csv
+            filename = f"{date_prefix}_Statement_BPI_Mastercard_Combined.csv"
             filepath = os.path.join(self.output_folder, filename)
             
             # Save CSV
@@ -254,7 +310,7 @@ class StatementFinalizer:
         
         print(f"\n🎉 Ready for import to accounting system!")
 
-def finalize_statement_csv(csv_path: str, statement_dates: list = None, accounts_csv_path: str = None) -> dict:
+def finalize_statement_csv(csv_path: str, statement_dates: list = None, accounts_csv_path: str = None, output_folder: str = None) -> dict:
     """
     Convenience function for finalizing a statement CSV with custom date naming
     
@@ -262,6 +318,7 @@ def finalize_statement_csv(csv_path: str, statement_dates: list = None, accounts
         csv_path: Path to the main CSV file
         statement_dates: List of statement dates (datetime.date objects or strings)
         accounts_csv_path: Path to accounts mapping CSV
+        output_folder: Optional output folder override
     """
-    finalizer = StatementFinalizer(accounts_csv_path)
+    finalizer = StatementFinalizer(accounts_csv_path, output_folder)
     return finalizer.finalize_statement(csv_path, statement_dates)

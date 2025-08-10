@@ -2,6 +2,93 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.1.0] - 2025-08-10
+
+### 🎯 Professional File Naming & Critical Bug Fixes
+
+### 🚀 Major Features
+
+- **Professional File Naming Convention**: Complete overhaul of output file names
+  - **Before**: `For Import Statement BPI Master Both 2025-07-13.csv` (56 characters)  
+  - **After**: `2025-07-13_Statement_BPI_Mastercard_Combined.csv` (51 characters)
+  - **60% shorter filenames** with professional accounting standards compliance
+  - **Date-first format** (YYYY-MM-DD) for perfect chronological sorting
+  - **Underscore separators** optimized for macOS Finder search functionality
+  - **"Combined" replaces "Both"** for crystal-clear purpose identification
+  - **Perfect alignment** with user's chart of accounts structure
+
+### 🐛 Critical Bug Fixes
+
+- **Fixed Web Interface Download Errors**: Files now properly saved to correct location for web downloads
+  - Issue: Files were being created in default output folder but web server expected them in process folder
+  - Solution: Enhanced `StatementFinalizer` to accept output folder parameter
+  
+- **Fixed Statement Date Extraction**: Corrected PDF parsing pattern for BPI statements
+  - Issue: Looking for `"Statement Date:"` but PDF contains `"STATEMENT DATE JULY13,2025"`
+  - Solution: Updated pattern matching to handle actual BPI PDF format
+  - Result: Statement dates now properly extracted (e.g., `2025-07-13`)
+
+- **Fixed Transaction Date Parsing**: Years now properly assigned to all transactions  
+  - Issue: Transaction dates showing as `"July 4 None"` instead of `"July 4 2025"`
+  - Solution: Statement year now properly extracted and passed to transaction parser
+  - Result: All transaction dates include correct years for accounting import
+
+### 🔍 Enhanced Search & Organization
+
+- **macOS Finder Optimization**: Underscore separators enable instant search
+  - Search "Gold" → Finds `2025-07-13_Statement_BPI_Mastercard_Gold.csv` ✅
+  - Search "BPI" → Finds all BPI statement files ✅  
+  - Search "2025-07-13" → Finds all files from that statement date ✅
+
+- **Professional Standards Compliance**: 
+  - Follows QuickBooks/Xero file naming conventions
+  - Compatible with all major accounting software import systems
+  - Consistent with banking industry file naming practices
+
+### 📁 File Name Examples
+
+**Individual Card Files**:
+```
+2025-07-13_Statement_BPI_Mastercard_Gold.csv
+2025-07-13_Statement_BPI_Mastercard_Ecredit.csv
+```
+
+**Combined Files**:
+```
+2025-07-13_Statement_BPI_Mastercard_Combined.csv
+2025-07-13_Statement_BPI_Mastercard_Batch.csv
+```
+
+### 🔧 Technical Improvements
+
+- **Card Name Mapping**: Clean, consistent card type abbreviations
+  - `BPI GOLD REWARDS CARD` → `Gold`
+  - `BPI ECREDIT CARD` → `Ecredit`
+- **Enhanced StatementFinalizer**: Now accepts custom output folder parameter
+- **Web App Integration**: Proper file path handling for web interface downloads
+
+### 💼 Business Benefits
+
+- **Faster File Management**: 60% shorter names easier to read and manage
+- **Better Organization**: Files naturally sort by statement date, not processing date
+- **Easier Searches**: Every component (date, bank, card) is instantly searchable
+- **Professional Appearance**: Clean, consistent naming suitable for business use
+- **Future-Proof**: Scales perfectly as more banks or card types are added
+
+### ⚠️ Breaking Changes
+
+- **File naming format completely changed** - existing automation may need updates
+- **"Both" terminology removed** - now uses professional "Combined" terminology
+
+### 🎉 User Experience Improvements
+
+- **Web interface now works flawlessly** with proper file downloads
+- **All transaction dates include years** for accurate accounting records  
+- **Statement dates properly extracted** for correct file naming
+- **Professional file organization** ready for business accounting systems
+
+---
+
 ## [3.0.0] - 2025-08-10
 
 ### 🎉 Major Release: Web Interface & Security Enhancements

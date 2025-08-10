@@ -37,8 +37,8 @@ Every processing run automatically creates **4 ready-to-import files** with **st
 
 ### 1. Main CSV (Complete Data)
 ```
-Single PDF: For Import Statement BPI Master 2025-01-12.csv
-Batch: For Import Statement BPI Master 2024-01-14 to 2025-05-12.csv
+Single PDF: 2025-01-12_Statement_BPI_Mastercard_Batch.csv
+Batch: 2024-01-14_Statement_BPI_Mastercard_Batch.csv (for date ranges)
 ```
 **Contains**: All transaction data + exchange rates + account mapping
 **Use for**: Analysis, record-keeping, backup
@@ -46,20 +46,20 @@ Batch: For Import Statement BPI Master 2024-01-14 to 2025-05-12.csv
 ### 2. Individual Card CSVs (2 files)
 ```
 Single PDF:
-For Import Statement BPI Master BPI_ECREDIT_CARD 2025-01-12.csv
-For Import Statement BPI Master BPI_GOLD_REWARDS_CARD 2025-01-12.csv
+2025-01-12_Statement_BPI_Mastercard_Ecredit.csv
+2025-01-12_Statement_BPI_Mastercard_Gold.csv
 
 Batch:
-For Import Statement BPI Master BPI_ECREDIT_CARD 2024-01-14 to 2025-05-12.csv
-For Import Statement BPI Master BPI_GOLD_REWARDS_CARD 2024-01-14 to 2025-05-12.csv
+2024-01-14_Statement_BPI_Mastercard_Ecredit.csv
+2024-01-14_Statement_BPI_Mastercard_Gold.csv
 ```
 **Contains**: Post Date, Description, Amount, Target Account
 **Use for**: Separate import per card
 
-### 3. Combined "Both" CSV
+### 3. Combined CSV
 ```
-Single PDF: For Import Statement BPI Master Both 2025-01-12.csv
-Batch: For Import Statement BPI Master Both 2024-01-14 to 2025-05-12.csv
+Single PDF: 2025-01-12_Statement_BPI_Mastercard_Combined.csv
+Batch: 2024-01-14_Statement_BPI_Mastercard_Combined.csv
 ```
 **Contains**: Date, Description, Amount, Account, Target Account
 **Use for**: Single unified import to accounting system
@@ -91,13 +91,13 @@ Batch: For Import Statement BPI Master Both 2024-01-14 to 2025-05-12.csv
 ### Single PDF Processing
 ```
 Input: Statement BPI Master 2025-01-12.pdf
-Output: For Import Statement BPI Master BPI_ECREDIT_CARD 2025-01-12.csv
+Output: 2025-01-12_Statement_BPI_Mastercard_Ecredit.csv
 ```
 
 ### Batch Processing
 ```
 Input: Multiple PDFs from 2024-01-14 to 2025-05-12
-Output: For Import Statement BPI Master BPI_ECREDIT_CARD 2024-01-14 to 2025-05-12.csv
+Output: 2024-01-14_Statement_BPI_Mastercard_Ecredit.csv
 ```
 
 ### Cross-Year Example
@@ -211,7 +211,7 @@ self.keyword_rules = {
 ## 🎯 Integration Examples
 
 ### Double-Entry Bookkeeping
-Use the **Combined "Both" CSV** for automatic double-entry:
+Use the **Combined CSV** for automatic double-entry:
 - **Account**: Credit card liability account
 - **Target Account**: Expense/asset account
 

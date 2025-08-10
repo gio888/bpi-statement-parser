@@ -140,14 +140,18 @@ def upload_and_process():
                 statement_year = pd.to_datetime(statement_dates[0]).year
             df_clean = currency_handler.clean_dataframe(df, statement_year)
             
-            # Save main CSV
-            timestamp = datetime.now().strftime("%Y-%m-%d-%H%M")
-            main_filename = f"For Import Statement BPI Master Batch {timestamp}.csv"
+            # Save main CSV with new naming convention
+            # Use statement date if available, otherwise current date
+            if statement_dates:
+                date_str = statement_dates[0]  # Use first statement date
+            else:
+                date_str = datetime.now().strftime("%Y-%m-%d")
+            main_filename = f"{date_str}_Statement_BPI_Mastercard_Batch.csv"
             main_csv_path = os.path.join(process_folder, main_filename)
             df_clean.to_csv(main_csv_path, index=False)
             
-            # Run finalization to create the 4 output files
-            finalization_result = finalize_statement_csv(main_csv_path, statement_dates)
+            # Run finalization to create the 4 output files in the process folder
+            finalization_result = finalize_statement_csv(main_csv_path, statement_dates, output_folder=process_folder)
             
             # Collect all output files
             if finalization_result:
@@ -167,9 +171,13 @@ def upload_and_process():
                         })
         
         # Prepare response
+        # Consider it successful if we processed files without fatal errors,
+        # even if no transactions were found
+        files_processed = len([r for r in results if r.get('success', False)])
+        
         response_data = {
-            'success': len(results) > 0,
-            'processed': len(results),
+            'success': files_processed > 0 or len(errors) == 0,
+            'processed': files_processed,
             'errors': errors,
             'total_transactions': len(all_transactions),
             'results': results,
@@ -189,36 +197,54 @@ def process_single_pdf(filepath, filename):
         extractor = PDFExtractor(filepath)
         text = extractor.extract_text()
         
-        # Parse transactions
-        parser = TransactionParser()
-        card_transactions = parser.parse_transactions(text)
-        
-        # Extract statement date
+        # Extract statement date first (needed for year context)
         statement_date = None
+        statement_year = None
+        import re
         for line in text.split('\n'):
-            if 'Statement Date:' in line:
-                date_str = line.split('Statement Date:')[1].strip()
+            # Look for "STATEMENT DATE JULY13,2025" format (case insensitive)
+            if 'STATEMENT DATE' in line.upper():
                 try:
-                    statement_date = pd.to_datetime(date_str).strftime('%Y-%m-%d')
-                except:
-                    pass
-                break
+                    # Extract date part after "STATEMENT DATE"
+                    date_part = line.upper().split('STATEMENT DATE')[1].strip()
+                    # Parse formats like "JULY13,2025" or "JULY 13, 2025"
+                    match = re.match(r'([A-Z]+)\s*(\d{1,2}),\s*(\d{4})', date_part)
+                    if match:
+                        month_name, day, year = match.groups()
+                        # Convert to standard format
+                        from datetime import datetime
+                        month_num = datetime.strptime(month_name, '%B').month
+                        statement_date = f"{year}-{month_num:02d}-{int(day):02d}"
+                        statement_year = int(year)
+                        break
+                except Exception as e:
+                    print(f"Warning: Could not parse statement date from: {line}")
+                    continue
         
-        # Flatten transactions
-        all_transactions = []
-        for card_name, transactions in card_transactions.items():
-            for trans in transactions:
-                trans['Card'] = card_name
-                if statement_date:
-                    trans['Statement Date'] = statement_date
-                all_transactions.append(trans)
+        # Parse transactions with statement year for proper date context
+        parser = TransactionParser()
+        all_transactions = parser.parse_transactions(text, statement_year)
+        
+        # Add statement date to transactions if found
+        if statement_date and all_transactions:
+            for trans in all_transactions:
+                trans['Statement Date'] = statement_date
+        
+        # Extract unique card names from transactions (check both 'Card' and 'card' keys)
+        cards = []
+        if all_transactions:
+            card_names = set()
+            for trans in all_transactions:
+                card_name = trans.get('Card') or trans.get('card') or 'Unknown'
+                card_names.add(card_name)
+            cards = list(card_names)
         
         return {
             'success': True,
             'filename': filename,
             'transactions': all_transactions,
             'transaction_count': len(all_transactions),
-            'cards': list(card_transactions.keys()),
+            'cards': cards,
             'statement_date': statement_date
         }
         

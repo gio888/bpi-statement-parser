@@ -120,27 +120,27 @@ Every processing run creates **4 ready-to-use files** with **statement date-base
 
 ### 1. **Main CSV** (comprehensive data)
 ```
-Single PDF: For Import Statement BPI Master 2025-01-12.csv
-Batch: For Import Statement BPI Master 2024-01-14 to 2025-05-12.csv
+Single PDF: 2025-01-12_Statement_BPI_Mastercard_Batch.csv
+Batch: 2024-01-14_Statement_BPI_Mastercard_Batch.csv (for date ranges)
 ```
 **Columns**: Card, Transaction Date, Post Date, Description, Amount, Currency, Foreign Amount, Exchange Rate, Target Account, Statement Date
 
 ### 2. **Individual Card CSVs** (2 files)
 ```
 Single PDF:
-For Import Statement BPI Master BPI_ECREDIT_CARD 2025-01-12.csv
-For Import Statement BPI Master BPI_GOLD_REWARDS_CARD 2025-01-12.csv
+2025-01-12_Statement_BPI_Mastercard_Ecredit.csv
+2025-01-12_Statement_BPI_Mastercard_Gold.csv
 
 Batch:
-For Import Statement BPI Master BPI_ECREDIT_CARD 2024-01-14 to 2025-05-12.csv
-For Import Statement BPI Master BPI_GOLD_REWARDS_CARD 2024-01-14 to 2025-05-12.csv
+2024-01-14_Statement_BPI_Mastercard_Ecredit.csv
+2024-01-14_Statement_BPI_Mastercard_Gold.csv
 ```
 **Columns**: Post Date, Description, Amount, Target Account
 
-### 3. **Combined "Both" CSV** (unified import)
+### 3. **Combined CSV** (unified import)
 ```
-Single PDF: For Import Statement BPI Master Both 2025-01-12.csv
-Batch: For Import Statement BPI Master Both 2024-01-14 to 2025-05-12.csv
+Single PDF: 2025-01-12_Statement_BPI_Mastercard_Combined.csv
+Batch: 2024-01-14_Statement_BPI_Mastercard_Combined.csv
 ```
 **Columns**: Date, Description, Amount, Account, Target Account
 
@@ -279,7 +279,7 @@ self.known_mappings = {
 
 ### Accounting System Integration
 - **Option A**: Import 2 individual card CSVs separately
-- **Option B**: Import 1 combined "Both" CSV for unified processing
+- **Option B**: Import 1 combined CSV for unified processing
 - **Analysis**: Use main CSV for reporting and analysis
 
 ## 🛠️ Troubleshooting
