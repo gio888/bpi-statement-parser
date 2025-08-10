@@ -1,9 +1,24 @@
 # BPI Credit Card Statement Parser
 
-A comprehensive Python tool for extracting transaction data from BPI credit card PDF statements with **automatic account mapping** and **ready-to-import CSV generation** for accounting systems.
+A comprehensive Python tool for extracting transaction data from BPI credit card PDF statements with **beautiful web interface**, **automatic account mapping**, and **secure personal configuration system**.
 
 ## 🎯 Features
 
+### 🌐 **New in v3.0.0: Web Interface**
+- ✅ **Beautiful Drag-and-Drop Interface**: No more command line needed!
+- ✅ **Real-time Processing**: Live progress indicators and status updates
+- ✅ **Batch Upload**: Process multiple PDFs at once
+- ✅ **One-Click Download**: Individual files or ZIP bundle
+- ✅ **Mobile-Responsive**: Works on desktop, tablet, and mobile
+
+### 🔒 **Security & Configuration**
+- ✅ **Secure Personal Configuration**: No personal data in repository
+- ✅ **Interactive Setup Wizard**: First-time configuration made easy
+- ✅ **Git History Cleaned**: All personal information removed
+- ✅ **Path Traversal Protection**: Secure file handling
+- ✅ **Local-Only Server**: Web interface only accessible from localhost
+
+### 🚀 **Core Features**
 - ✅ **Automatic Account Mapping**: 98.7% success rate with intelligent categorization
 - ✅ **Statement Date-Based Naming**: Files named with actual statement dates for easy organization
 - ✅ **Cross-Year Transaction Handling**: December transactions in January statements correctly dated
@@ -11,9 +26,9 @@ A comprehensive Python tool for extracting transaction data from BPI credit card
 - ✅ **Exchange Rate Calculation**: Automatic PHP conversion rates for foreign transactions
 - ✅ **Multi-card Support**: BPI Gold Rewards Card and BPI eCredit Card
 - ✅ **Multi-currency Handling**: 13+ currencies (PHP, USD, EUR, SGD, NZD, etc.)
-- ✅ **Batch Processing**: Process multiple PDF statements at once with date filtering
+- ✅ **Comprehensive Testing**: Unit, integration, and smoke tests included
 - ✅ **Smart Text Normalization**: Handles PDF formatting inconsistencies across years
-- ✅ **High Success Rate**: 98.7% automated processing (2023-2025 PDF formats)
+- ✅ **High Success Rate**: 98.7+ automated processing (2023-2025 PDF formats)
 
 ## 🚀 Quick Start
 
@@ -55,7 +70,35 @@ A comprehensive Python tool for extracting transaction data from BPI credit card
 
    Your personal configuration is stored in `config/` and is automatically excluded from version control.
 
-### Usage
+## 🌐 **NEW: Web Interface Usage (v3.0.0)**
+
+**🎉 The easiest way to use the parser - no command line needed!**
+
+1. **Start the web interface**
+   ```bash
+   python run_web.py
+   ```
+   
+   This will:
+   - Start the Flask server on localhost:8080
+   - Automatically open your browser
+   - Show the beautiful drag-and-drop interface
+
+2. **Process your statements**
+   - Drag and drop multiple PDF files at once
+   - Watch real-time processing progress
+   - Download individual CSVs or ZIP bundle
+   - All 4 output files generated automatically ✨
+
+3. **Quick validation** (optional)
+   ```bash
+   python run_tests.py --quick  # Run smoke tests
+   python preflight_check.py    # Check environment
+   ```
+
+## ⌨️ **Classic: Command Line Usage**
+
+If you prefer the traditional approach:
 
 1. **Run the application**
    ```bash
@@ -64,7 +107,7 @@ A comprehensive Python tool for extracting transaction data from BPI credit card
 
 2. **Choose processing mode**
    - **Option 1**: Process single PDF
-   - **Option 2**: Process multiple PDFs (batch mode) ⭐ **Recommended**
+   - **Option 2**: Process multiple PDFs (batch mode)
 
 3. **For batch processing**:
    - Enter cutoff date (e.g., `2023-10-01`)
@@ -144,33 +187,70 @@ BPI GOLD REWARDS CARD,Amazon Prime VideoPhSingapore,299.00,PHP,,
 ```
 bpi-statement-parser/
 ├── src/                       # Core application code
-│   ├── main_enhanced.py       # Main menu system
-│   ├── batch_processor.py     # Enhanced batch processing
-│   ├── statement_finalizer.py # Account mapping & CSV generation
-│   ├── pdf_extractor.py       # PDF text extraction
-│   ├── transaction_parser.py  # Transaction parsing logic
-│   └── currency_handler.py    # Currency & exchange rate processing
-├── account_mapper.py          # Intelligent account mapping
-├── test_account_mapper.py     # Account mapping testing
+│   ├── web_app.py            # 🌐 Flask web interface (NEW v3.0.0)
+│   ├── config_loader.py      # 🔒 Configuration management (NEW v3.0.0)
+│   ├── main_enhanced.py      # Classic CLI interface
+│   ├── batch_processor.py    # Enhanced batch processing
+│   ├── statement_finalizer.py# Account mapping & CSV generation
+│   ├── pdf_extractor.py      # PDF text extraction
+│   ├── transaction_parser.py # Transaction parsing logic
+│   └── currency_handler.py   # Currency & exchange rate processing
+├── static/                    # 🌐 Web interface files (NEW v3.0.0)
+│   ├── index.html            # Main web page
+│   ├── style.css             # Modern UI styles
+│   └── app.js                # Client-side JavaScript
+├── config_templates/          # 🔒 Configuration templates (NEW v3.0.0)
+├── tests/                     # 🧪 Comprehensive test suite (NEW v3.0.0)
+│   ├── test_config_loader.py # Configuration tests
+│   ├── test_web_app.py       # Web interface tests
+│   └── test_integration.py   # End-to-end tests
+├── run_web.py                # 🌐 One-command web launcher (NEW v3.0.0)
+├── setup.py                  # 🔒 Interactive setup wizard (NEW v3.0.0)
+├── run_tests.py              # 🧪 Test runner (NEW v3.0.0)
+├── preflight_check.py        # 🧪 Environment validator (NEW v3.0.0)
+├── account_mapper.py         # Intelligent account mapping
 ├── data/
-│   ├── input/                 # PDFs and accounts list
-│   └── output/                # Generated CSV files
-├── diagnostics/               # Troubleshooting tools
-├── tests/                     # Test scripts
-└── docs/                      # Documentation
+│   ├── input/                # PDFs and accounts list
+│   └── output/               # Generated CSV files
+├── diagnostics/              # Troubleshooting tools
+└── docs/                     # Documentation
 ```
 
 ## 🔧 Configuration
 
-### PDF Folder Setup
-Update paths in `src/batch_processor.py`:
-```python
-pdf_folder = "/path/to/your/bpi/statements/"
-output_folder = "/path/to/output/folder/"
-```
+### 🔒 **NEW: Secure Configuration System (v3.0.0)**
+
+**Personal data is now stored separately from code!** 
+
+1. **Run the setup wizard** (first-time only):
+   ```bash
+   python setup.py
+   ```
+
+2. **Configuration is stored in**:
+   ```
+   config/
+   ├── config.py              # Your personal settings
+   └── card_account_mapping.py # Credit card mappings
+   ```
+
+3. **Environment variable overrides**:
+   ```bash
+   export BPI_PDF_INPUT_FOLDER="/custom/path/to/pdfs"
+   export BPI_OUTPUT_FOLDER="/custom/path/to/output"
+   export BPI_PRIMARY_CURRENCY="PHP"
+   ```
 
 ### Account Mapping Customization
-Update mappings in `account_mapper.py`:
+Update mappings in `config/card_account_mapping.py`:
+```python
+CARD_ACCOUNT_MAPPING = {
+    'BPI ECREDIT CARD': 'Liabilities:Credit Card:BPI Mastercard:e-credit',
+    'BPI GOLD REWARDS CARD': 'Liabilities:Credit Card:BPI Mastercard:Gold',
+}
+```
+
+Or customize merchant mappings in `account_mapper.py`:
 ```python
 self.known_mappings = {
     'Your Merchant Name': 'Your:Account:Category',
@@ -180,9 +260,16 @@ self.known_mappings = {
 
 ## 🎯 Workflow
 
-### Monthly Processing
+### 🌐 **NEW: Monthly Processing with Web Interface**
 1. **Download PDF statements** from BPI online banking
-2. **Place in monitored folder**
+2. **Start web interface**: `python run_web.py`
+3. **Drag & drop PDFs** into the browser
+4. **Download CSVs** or ZIP bundle
+5. **Import files** into your accounting system
+
+### ⌨️ **Classic: Command Line Processing**
+1. **Download PDF statements** from BPI online banking
+2. **Place in configured folder** (or use drag-and-drop on web)
 3. **Run batch processor**:
    ```bash
    python src/main_enhanced.py
@@ -197,8 +284,18 @@ self.known_mappings = {
 
 ## 🛠️ Troubleshooting
 
-### Quick Diagnostics
+### 🧪 **NEW: Testing & Diagnostics (v3.0.0)**
+
 ```bash
+# Quick smoke test - validate core functionality
+python run_tests.py --quick
+
+# Full test suite - comprehensive validation
+python run_tests.py --full
+
+# Pre-flight check - environment validation
+python preflight_check.py
+
 # Test account mapping on existing CSV
 python test_account_mapper.py
 
@@ -224,9 +321,17 @@ See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for detailed solutions.
 - **Currency Detection**: Automatic detection with exchange rates
 - **Batch Efficiency**: Process years of statements in minutes
 
-## 🔄 Recent Updates (v2.0.0)
+## 🔄 Recent Updates
 
-### Major Enhancements
+### 🎉 **v3.0.0 - Web Interface & Security Revolution**
+- ✨ **Beautiful Web Interface** with drag-and-drop functionality
+- ✨ **Secure Configuration System** - no personal data in repository
+- ✨ **Comprehensive Test Suite** - unit, integration, and smoke tests
+- ✨ **Interactive Setup Wizard** - first-time configuration made easy
+- ✨ **Git History Cleaned** - all personal information removed
+- ✨ **One-Command Launch** - `python run_web.py` and you're done!
+
+### 🚀 **v2.0.0 - Account Mapping & 4-File System**
 - ✨ **98.7% automatic account mapping** with fuzzy matching
 - ✨ **4-file output system** for flexible accounting integration
 - ✨ **Exchange rate calculation** for all foreign transactions
@@ -235,10 +340,13 @@ See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for detailed solutions.
 - ✨ **Smart account categorization** using transaction patterns
 
 ### Technical Improvements
+- Beautiful, responsive web interface with real-time processing
+- Secure personal configuration system with environment variable overrides
+- Comprehensive testing framework with automated validation
+- Enhanced security with path traversal protection
 - Added fuzzy string matching for intelligent categorization
 - Enhanced currency handler with flexible symbol support
 - Improved error handling and user feedback
-- Added comprehensive testing framework
 
 ## 🤝 Contributing
 
@@ -266,6 +374,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**From PDF statements to accounting system in one command** ⚡
+**🌐 From PDF statements to accounting system with drag-and-drop** ⚡
+
+**v3.0.0**: Web interface • Secure configuration • Comprehensive testing
 
 Made with ❤️ for automated expense tracking and financial management

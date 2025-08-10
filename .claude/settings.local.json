@@ -9,7 +9,11 @@
       "Bash(git ls-tree:*)",
       "WebFetch(domain:github.com)",
       "Bash(curl:*)",
-      "Bash(brew install:*)"
+      "Bash(brew install:*)",
+      "Bash(python3:*)",
+      "Bash(source:*)",
+      "Bash(python run_tests.py:*)",
+      "Bash(git add:*)"
     ],
     "deny": []
   }

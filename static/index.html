@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BPI Statement Parser</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💳 BPI Statement Parser</h1>
+            <p>Convert your BPI credit card statements to accounting-ready CSV files</p>
+        </header>
+
+        <!-- Upload Section -->
+        <section id="upload-section" class="card">
+            <h2>📄 Upload PDF Statements</h2>
+            
+            <div id="drop-zone" class="drop-zone">
+                <svg class="upload-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <h3>Drop PDF files here</h3>
+                <p>or <button type="button" class="browse-btn" onclick="document.getElementById('file-input').click()">browse files</button></p>
+                <input type="file" id="file-input" accept=".pdf" multiple hidden>
+                <small>Supports BPI Master Credit Card statements (Max 50MB per file)</small>
+            </div>
+
+            <div id="file-list" class="file-list" style="display: none;">
+                <h3>Selected Files:</h3>
+                <ul id="file-list-items"></ul>
+                <button id="process-btn" class="btn btn-primary">
+                    <span class="btn-text">Process Statements</span>
+                    <span class="spinner" style="display: none;"></span>
+                </button>
+                <button id="clear-btn" class="btn btn-secondary">Clear</button>
+            </div>
+        </section>
+
+        <!-- Progress Section -->
+        <section id="progress-section" class="card" style="display: none;">
+            <h2>⚙️ Processing</h2>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <p id="progress-text">Processing your statements...</p>
+            </div>
+            <div id="progress-details" class="progress-details"></div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results-section" class="card" style="display: none;">
+            <h2>✅ Processing Complete</h2>
+            
+            <div class="results-summary">
+                <div class="stat">
+                    <span class="stat-value" id="stat-files">0</span>
+                    <span class="stat-label">Files Processed</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value" id="stat-transactions">0</span>
+                    <span class="stat-label">Transactions Found</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value" id="stat-errors">0</span>
+                    <span class="stat-label">Errors</span>
+                </div>
+            </div>
+
+            <div id="errors-container" class="errors" style="display: none;">
+                <h3>⚠️ Errors Encountered:</h3>
+                <ul id="error-list"></ul>
+            </div>
+
+            <div class="downloads">
+                <h3>📥 Download Your Files</h3>
+                <p class="download-info">4 CSV files have been generated for easy import to your accounting software:</p>
+                
+                <div id="download-buttons" class="download-buttons">
+                    <!-- Download buttons will be inserted here -->
+                </div>
+                
+                <button id="download-all-btn" class="btn btn-primary btn-large">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Download All as ZIP
+                </button>
+            </div>
+
+            <div class="actions">
+                <button id="process-more-btn" class="btn btn-secondary">Process More Statements</button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <p>🔒 All processing happens locally on your computer. No data is sent to any server.</p>
+            <p><small>BPI Statement Parser v2.0 - Web Interface</small></p>
+        </footer>
+    </div>
+
+    <!-- Error Modal -->
+    <div id="error-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>❌ Error</h3>
+            <p id="error-message"></p>
+            <button onclick="closeErrorModal()" class="btn btn-primary">OK</button>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

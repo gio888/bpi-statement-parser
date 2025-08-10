@@ -1,6 +1,24 @@
 # BPI Statement Parser - Usage Guide
 
-## 🚀 Quick Start
+## 🌐 **NEW: Web Interface (v3.0.0) - Recommended** 
+
+### Start Web Interface
+```bash
+python run_web.py
+```
+
+This will:
+- Start Flask server on localhost:8080
+- Open browser automatically
+- Show beautiful drag-and-drop interface
+
+### Use Web Interface
+1. **Drag and drop** multiple PDF files at once
+2. **Watch processing** in real-time with progress indicators
+3. **Download files** individually or as ZIP bundle
+4. **All 4 output files** generated automatically
+
+## ⌨️ **Classic: Command Line Interface**
 
 ### Recommended: Batch Processing
 ```bash

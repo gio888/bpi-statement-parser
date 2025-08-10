@@ -2,6 +2,99 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.0] - 2025-08-10
+
+### 🎉 Major Release: Web Interface & Security Enhancements
+
+### 🚀 New Features
+- **Web Interface**: Beautiful drag-and-drop web UI for easy monthly processing
+  - Drag and drop multiple PDFs at once
+  - Real-time processing progress indicators
+  - Download all 4 CSVs with one click or as ZIP
+  - Mobile-responsive design
+  - No more command line needed!
+
+- **Secure Configuration System**: Complete separation of personal data from code
+  - Interactive setup wizard (`setup.py`) for first-time configuration
+  - Personal config stored in `config/` folder (gitignored)
+  - Template files for new users
+  - Environment variable support for overrides
+  - No personal data in repository
+
+- **Comprehensive Test Suite**: Catch errors before they happen
+  - Unit tests for all major components
+  - Integration tests for complete pipeline
+  - Pre-flight check script to verify environment
+  - Quick smoke tests for rapid validation
+  - Test runner with detailed reporting
+
+### 🔒 Security Improvements
+- **Complete Personal Data Removal**: Git history cleaned of all personal information
+  - BFG repo cleaner used to remove historical data
+  - All hardcoded paths replaced with configuration system
+  - Email addresses and personal folders removed
+  - Repository is now truly open-source ready
+
+- **Path Traversal Protection**: Web interface validates all file paths
+- **Input Validation**: Strict PDF file validation and size limits
+- **Local-Only Server**: Web interface only accessible from localhost
+- **Automatic Cleanup**: Temporary files deleted after processing
+
+### 🌐 Web Interface Components
+- **Flask Backend** (`src/web_app.py`): REST API wrapping existing processing
+- **Modern Frontend** (`static/`): HTML5/CSS3/JavaScript interface
+- **Quick Launcher** (`run_web.py`): One-command startup with auto browser open
+- **Batch Upload**: Process multiple PDFs in single session
+- **Download Center**: Individual files or ZIP bundle
+
+### 🧪 Testing & Validation
+- **Pre-flight Check** (`preflight_check.py`): Validates environment before run
+- **Test Suite** (`tests/`): Comprehensive unit and integration tests
+- **Test Runner** (`run_tests.py`): Automated test execution with reporting
+- **Smoke Tests**: Quick validation of core functionality
+
+### 📚 Documentation Updates
+- **Configuration Guide** (`docs/CONFIGURATION.md`): Complete setup instructions
+- **README**: Updated with web interface usage
+- **Setup Wizard**: Interactive configuration for new users
+- **Security Best Practices**: Guidelines for safe usage
+
+### 🔧 Technical Improvements
+- **Config Loader** (`src/config_loader.py`): Centralized configuration management
+- **Flexible Imports**: Handles different import contexts gracefully
+- **Error Handling**: Better error messages and recovery
+- **Logging**: Structured logging throughout application
+
+### 📦 New Dependencies
+- `flask>=2.3.0` - Web framework for UI
+- `flask-cors>=4.0.0` - CORS support for web interface
+
+### 🔄 Workflow Revolution
+**Before v3.0.0**: 
+```bash
+source venv/bin/activate
+python src/main_enhanced.py
+# Navigate menus, enter paths, process files
+```
+
+**After v3.0.0**:
+```bash
+python run_web.py
+# Browser opens → Drag PDFs → Download CSVs → Done!
+```
+
+### 🛡️ Breaking Changes
+- Configuration now required (run `setup.py` first time)
+- Personal paths no longer hardcoded (must configure)
+- Web interface is now the recommended way to use the parser
+
+### 🐛 Bug Fixes
+- Fixed import path issues in various modules
+- Resolved configuration loading edge cases
+- Corrected test import paths for better compatibility
+
+---
+
 ## [2.1.0] - 2025-06-07
 
 ### 🚀 Major Features Added
