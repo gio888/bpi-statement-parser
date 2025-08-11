@@ -50,6 +50,35 @@ def create_accounting_format(df, corrections_dict=None):
     Returns:
         DataFrame with accounting format columns
     """
+    # Card name mapping (same as in statement_finalizer)
+    CARD_NAME_MAPPING = {
+        'BPI GOLD REWARDS CARD': 'Gold',
+        'BPI ECREDIT CARD': 'e-credit',
+        'BPI_GOLD_REWARDS_CARD': 'Gold',
+        'BPI_ECREDIT_CARD': 'e-credit',
+        'GOLD': 'Gold',
+        'ECREDIT': 'e-credit'
+    }
+    
+    def get_card_account(card_name):
+        """Get the proper account name for a card"""
+        if not card_name or card_name == 'BPI Card':
+            return 'Liabilities:Credit Card:BPI Mastercard'
+        
+        # Try exact match first
+        mapped_name = CARD_NAME_MAPPING.get(card_name.upper())
+        if mapped_name:
+            return f"Liabilities:Credit Card:BPI Mastercard:{mapped_name}"
+        
+        # Try partial match
+        card_upper = card_name.upper()
+        for key, value in CARD_NAME_MAPPING.items():
+            if key in card_upper:
+                return f"Liabilities:Credit Card:BPI Mastercard:{value}"
+        
+        # Default fallback
+        return f"Liabilities:Credit Card:BPI Mastercard:{card_name}"
+    
     accounting_df = pd.DataFrame()
     
     # Basic columns (using capitalized column names)
@@ -62,10 +91,8 @@ def create_accounting_format(df, corrections_dict=None):
     accounting_df['Amount (Negated)'] = original_amounts.apply(lambda x: x if x > 0 else 0)
     accounting_df['Amount'] = original_amounts.apply(lambda x: 0 if x > 0 else abs(x))
     
-    # Account column (original card account from Card column)
-    accounting_df['Account'] = df.get('Card', 'BPI Card').apply(
-        lambda card: f"Liabilities:Credit Card:BPI Mastercard:{card}" if card != 'BPI Card' else 'Liabilities:Credit Card:BPI Mastercard'
-    )
+    # Account column with proper card name mapping
+    accounting_df['Account'] = df.get('Card', 'BPI Card').apply(get_card_account)
     
     # Target Account (corrected classification)
     target_accounts = []
