@@ -51,4 +51,17 @@ config/
 
 # Any PDF files anywhere in the project
 *.pdf
+
+# Debug files that might contain personal data
+debug_*.txt
+debug_*.py
+debug_pdf_*.txt
+
+# Personal financial data
+*.csv
+!config_templates/*.csv
+!tests/test_data/*.csv
+
+# Local settings
+.claude/settings.local.json
 EOF

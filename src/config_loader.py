@@ -204,16 +204,13 @@ class ConfigLoader:
         if path and os.path.exists(path):
             return path
         
-        # Check config directory
+        # Check config directory for personal accounts mapping
         config_accounts = self.config_dir / "accounts_mapping.csv"
         if config_accounts.exists():
             return str(config_accounts)
         
-        # Check data/input directory (legacy)
-        legacy_path = Path(__file__).parent.parent / "data" / "input" / "Accounts List 2024-07.csv"
-        if legacy_path.exists():
-            return str(legacy_path)
-        
+        # No fallback to data directory - accounts must be in personal config
+        self.logger.warning("No accounts CSV found. Please run setup.py to configure your personal accounts.")
         return None
     
     def get_output_folder(self) -> str:

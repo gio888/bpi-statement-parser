@@ -73,7 +73,7 @@ class TransactionParser:
         self.skip_patterns = [
             r'Statement of Account', r'Customer Number', r'Previous Balance',
             r'Past Due', r'Ending Balance', r'Unbilled Installment', 
-            r'^Finance Charge\s+\d', r'GIOVANNI BACAREZA',
+            r'^Finance Charge\s+\d', r'^[A-Z\s]+$',  # Match any all-caps name pattern
             r'Transaction\s+Post.*Date', r'^\d{6}-\d-\d{2}-\d{7}',
             r'^(Date|Transaction|Post Date|Description|Amount)\s*$'
         ]

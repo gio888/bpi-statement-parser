@@ -218,14 +218,19 @@ def upload_and_process():
             # Apply account mapping with confidence scores for review
             try:
                 config = get_config()
-                accounts_csv_path = config.get('ACCOUNTS_CSV_PATH')
+                accounts_csv_path = config.get_accounts_csv_path()
                 if not accounts_csv_path:
-                    raise ValueError("ACCOUNTS_CSV_PATH not configured")
+                    raise ValueError("ACCOUNTS_CSV_PATH not configured. Please run setup.py")
             except Exception as e:
                 print(f"Config error: {e}")
-                accounts_csv_path = os.path.join('data', 'input', 'Accounts List 2024-07.csv')
+                # No fallback - accounts must be in personal config
+                accounts_csv_path = None
             
-            mapper = AccountMapper(accounts_csv_path)
+            if accounts_csv_path:
+                mapper = AccountMapper(accounts_csv_path)
+            else:
+                # Use mapper without CSV - will use basic mappings only
+                mapper = AccountMapper()
             
             # Generate mapping data for review interface
             review_transactions = []
@@ -479,15 +484,20 @@ def get_categories():
         # Load account mapper to get categories
         try:
             config = get_config()
-            accounts_csv_path = config.get('ACCOUNTS_CSV_PATH')
+            accounts_csv_path = config.get_accounts_csv_path()
             if not accounts_csv_path:
-                raise ValueError("ACCOUNTS_CSV_PATH not configured")
+                raise ValueError("ACCOUNTS_CSV_PATH not configured. Please run setup.py")
         except Exception as e:
             print(f"Config error: {e}")
-            accounts_csv_path = os.path.join('data', 'input', 'Accounts List 2024-07.csv')
+            # No fallback - accounts must be in personal config
+            accounts_csv_path = None
         
-        mapper = AccountMapper(accounts_csv_path)
-        categories = mapper.get_all_valid_accounts()
+        if accounts_csv_path:
+            mapper = AccountMapper(accounts_csv_path)
+            categories = mapper.get_all_valid_accounts()
+        else:
+            # Return empty list if no accounts CSV configured
+            categories = []
         
         return jsonify({
             'success': True,

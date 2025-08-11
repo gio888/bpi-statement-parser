@@ -1,27 +1,67 @@
-Account Name,Account Type,Description,Keywords
-Assets:Bank:BPI Savings,Asset,BPI Savings Account,savings
-Liabilities:Credit Card:BPI Mastercard:Gold,Liability,BPI Gold Rewards Card,gold rewards
-Liabilities:Credit Card:BPI Mastercard:e-credit,Liability,BPI e-Credit Card,ecredit
-Expenses:Food:Groceries,Expense,Grocery shopping,grocery store market metromart s&r
-Expenses:Food:Dining,Expense,Restaurants and dining out,restaurant cafe dining food
-Expenses:Transportation,Expense,Transportation costs,grab taxi uber transport
-Expenses:Utilities:Electric,Expense,Electricity bills,meralco electric power
-Expenses:Utilities:Water,Expense,Water bills,maynilad water
-Expenses:Utilities:Internet,Expense,Internet and phone bills,pldt globe smart converge
-Expenses:Utilities:Mobile,Expense,Mobile phone bills,smart globe sun
-Expenses:Entertainment:Music/Movies,Expense,Entertainment subscriptions,netflix spotify apple music youtube
-Expenses:Entertainment:Recreation,Expense,Games and recreation,nintendo playstation xbox steam
-Expenses:Education:Books,Expense,Books and learning materials,audible kindle amazon books
-Expenses:Education:Newspaper & Magazines,Expense,News subscriptions,wsj economist newspaper magazine
-Expenses:Professional Development & Productivity,Expense,Professional tools and services,google cloud microsoft notion
-Expenses:Health,Expense,Health and medical expenses,pharmacy doctor hospital clinic
-Expenses:Clothes,Expense,Clothing and apparel,uniqlo h&m zara shein
-Expenses:Household Supplies,Expense,Household items and supplies,shopee lazada amazon household
-Expenses:Banking Costs:Bank Service Charge,Expense,Banking fees and charges,fee charge reversal
-Expenses:Professional Fees,Expense,Professional services,accounting legal consulting
-Expenses:Auto:Gas,Expense,Gasoline and fuel,shell petron caltex gas
-Expenses:Auto:Maintenance,Expense,Car maintenance and repairs,toyota honda repair maintenance
-Expenses:Travel:Fare,Expense,Travel and transportation fares,airline hotel booking travel
-Expenses:Childcare:Books,Expense,Children's books and materials,epic getepic children kids
-Assets:Investments:Investment in Business,Asset,Business investments,domain hosting godaddy business
-Manual Review,Unknown,Transactions requiring manual review,
+Type,Full Account Name,Account Name,Account Code,Description,Account Color,Notes,Symbol,Namespace,Hidden,Tax Info,Placeholder
+ASSET,Assets,Assets,,Assets,,,PHP,CURRENCY,F,F,T
+ASSET,Assets:Current Assets,Current Assets,,Current Assets,,,PHP,CURRENCY,F,F,T
+BANK,Assets:Current Assets:Banks Local,Banks Local,,Banks Local,,,PHP,CURRENCY,F,F,T
+BANK,Assets:Current Assets:Banks Local:BPI Savings,BPI Savings,,BPI Savings Account,,,PHP,CURRENCY,F,F,F
+BANK,Assets:Current Assets:Banks Local:BPI Checking,BPI Checking,,BPI Checking Account,,,PHP,CURRENCY,F,F,F
+CASH,Assets:Current Assets:Cash Foreign,Cash Foreign,,,,,PHP,CURRENCY,F,F,T
+CASH,Assets:Current Assets:Cash Foreign:USD,USD,,,,,USD,CURRENCY,F,F,F
+CASH,Assets:Current Assets:Cash Foreign:EUR,EUR,,,,,EUR,CURRENCY,F,F,F
+CASH,Assets:Current Assets:Cash Foreign:SGD,SGD,,,,,SGD,CURRENCY,F,F,F
+CASH,Assets:Current Assets:Cash on Hand,Cash on Hand,,Cash on Hand,,,PHP,CURRENCY,F,F,F
+ASSET,Assets:Investments,Investments,,Investments,,,PHP,CURRENCY,F,F,T
+ASSET,Assets:Investments:Investment in Business,Investment in Business,,Business Investments,,,PHP,CURRENCY,F,F,F
+LIABILITY,Liabilities,Liabilities,,Liabilities,,,PHP,CURRENCY,F,F,T
+CREDIT,Liabilities:Credit Card,Credit Card,,Credit Cards,,,PHP,CURRENCY,F,F,T
+CREDIT,Liabilities:Credit Card:BPI Mastercard,BPI Mastercard,,BPI Mastercard,,,PHP,CURRENCY,F,F,T
+CREDIT,Liabilities:Credit Card:BPI Mastercard:e-credit,e-credit,,BPI e-Credit Card,,,PHP,CURRENCY,F,F,F
+CREDIT,Liabilities:Credit Card:BPI Mastercard:Gold,Gold,,BPI Gold Rewards Card,,,PHP,CURRENCY,F,F,F
+INCOME,Income,Income,,Income,,,PHP,CURRENCY,F,F,T
+INCOME,Income:Interest Income,Interest Income,,Interest Income,,,PHP,CURRENCY,F,F,F
+INCOME,Income:Salary,Salary,,Salary Income,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses,Expenses,,Expenses,,,PHP,CURRENCY,F,F,T
+EXPENSE,Expenses:Auto,Auto,,Auto Expenses,,,PHP,CURRENCY,F,F,T
+EXPENSE,Expenses:Auto:Gas,Gas,,Gasoline,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Auto:Maintenance,Maintenance,,Auto Maintenance,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Auto:Parking,Parking,,Parking Fees,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Banking Costs,Banking Costs,,Banking Costs,,,PHP,CURRENCY,F,F,T
+EXPENSE,Expenses:Banking Costs:Bank Service Charge,Bank Service Charge,,Bank Service Charges,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Banking Costs:Interest Paid,Interest Paid,,Interest Paid,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Childcare,Childcare,,Childcare Expenses,,,PHP,CURRENCY,F,F,T
+EXPENSE,Expenses:Childcare:Books,Books,,Children's Books,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Childcare:Toys,Toys,,Children's Toys,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Clothes,Clothes,,Clothing,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Education,Education,,Education Expenses,,,PHP,CURRENCY,F,F,T
+EXPENSE,Expenses:Education:Books,Books,,Books,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Education:Courses,Courses,,Courses and Training,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Education:Newspaper & Magazines,Newspaper & Magazines,,News and Magazine Subscriptions,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Entertainment,Entertainment,,Entertainment,,,PHP,CURRENCY,F,F,T
+EXPENSE,Expenses:Entertainment:Music/Movies,Music/Movies,,Music and Movie Subscriptions,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Entertainment:Recreation,Recreation,,Recreation and Games,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Food,Food,,Food Expenses,,,PHP,CURRENCY,F,F,T
+EXPENSE,Expenses:Food:Dining,Dining,,Dining Out,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Food:Groceries,Groceries,,Grocery Shopping,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Gifts,Gifts,,Gifts,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Health,Health,,Health and Medical,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Household Supplies,Household Supplies,,Household Supplies,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Insurance,Insurance,,Insurance,,,PHP,CURRENCY,F,F,T
+EXPENSE,Expenses:Insurance:Health Insurance,Health Insurance,,Health Insurance,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Insurance:Life Insurance,Life Insurance,,Life Insurance,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Professional Development & Productivity,Professional Development & Productivity,,Professional Tools and Services,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Professional Fees,Professional Fees,,Professional Services,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Taxes,Taxes,,Taxes,,,PHP,CURRENCY,F,F,T
+EXPENSE,Expenses:Taxes:Income Tax,Income Tax,,Income Tax,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Travel,Travel,,Travel Expenses,,,PHP,CURRENCY,F,F,T
+EXPENSE,Expenses:Travel:Accommodation,Accommodation,,Hotels and Lodging,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Travel:Fare,Fare,,Travel Fares,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Utilities,Utilities,,Utilities,,,PHP,CURRENCY,F,F,T
+EXPENSE,Expenses:Utilities:Electric,Electric,,Electricity,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Utilities:Internet,Internet,,Internet Service,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Utilities:Mobile,Mobile,,Mobile Phone,,,PHP,CURRENCY,F,F,F
+EXPENSE,Expenses:Utilities:Water,Water,,Water Service,,,PHP,CURRENCY,F,F,F
+EQUITY,Equity,Equity,,Equity,,,PHP,CURRENCY,F,F,T
+EQUITY,Equity:Opening Balances,Opening Balances,,Opening Balances,,,PHP,CURRENCY,F,F,F
+EQUITY,Equity:Retained Earnings,Retained Earnings,,Retained Earnings,,,PHP,CURRENCY,F,F,F
+TRADING,Trading,Trading,,Trading,,,PHP,CURRENCY,F,F,T
+TRADING,Trading:Currency,Currency,,Currency Trading,,,PHP,CURRENCY,F,F,F
+EXPENSE,Manual Review,Manual Review,,Transactions Requiring Manual Review,,,PHP,CURRENCY,F,F,F

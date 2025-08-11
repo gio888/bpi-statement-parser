@@ -119,7 +119,7 @@ def main():
     """Main test function"""
     # Default paths
     csv_path = os.environ.get('BPI_TEST_CSV', './data/output/For Import Statement BPI Master 2025-05-25-1413.csv')
-    accounts_csv_path = os.environ.get('BPI_ACCOUNTS_CSV', './data/input/Accounts List 2024-07.csv')
+    accounts_csv_path = os.environ.get('BPI_ACCOUNTS_CSV', './config/accounts_mapping.csv')
     
     # Allow user to specify different paths
     import sys
