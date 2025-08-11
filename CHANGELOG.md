@@ -2,6 +2,75 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.2.1] - 2025-08-11
+
+### 🔒 Critical Security Fixes & Personal Configuration System
+
+### 🚨 Security Improvements
+
+- **Removed Personal Information**: Eliminated all hardcoded personal data from source code
+  - **Personal Name Removal**: Replaced hardcoded "GIOVANNI BACAREZA" with generic pattern matching
+  - **Enhanced Pattern Matching**: Now uses `^[A-Z\s]+$` to match any all-caps customer name
+  - **No More Personal Data Exposure**: Complete sanitization of personal identifiers
+
+- **Enhanced .gitignore Protection**:
+  - **Debug Files**: Added exclusions for `debug_*.txt` and `debug_*.py` files
+  - **CSV Files**: Exclude all CSV files except templates and test data
+  - **Local Settings**: Ignore Claude local settings and personal configurations
+  - **Comprehensive Coverage**: Protect against accidental personal data commits
+
+### 🔧 Personal Configuration System Revolution
+
+- **Accounts CSV Personalization**: Complete overhaul of accounts management
+  - **No Hardcoded Paths**: Removed all references to `"Accounts List 2024-07.csv"`
+  - **Personal Config Required**: Accounts CSV must be in `config/accounts_mapping.csv`
+  - **User-Specific Charts**: Each user maintains their own chart of accounts
+  - **Template System**: Comprehensive 67-account template provided
+
+- **Enhanced Config Loader**:
+  - **Proper Path Resolution**: `get_accounts_csv_path()` follows hierarchy:
+    1. Config `ACCOUNTS_CSV_PATH` setting
+    2. `config/accounts_mapping.csv` (default personal location)
+    3. **No fallback** - forces proper setup
+  - **Warning Messages**: Clear guidance when accounts not configured
+  - **Security First**: No automatic fallback to data directory
+
+- **Web Application Updates**:
+  - **Config-Based Loading**: Uses `config.get_accounts_csv_path()`
+  - **Graceful Degradation**: Works with or without accounts CSV
+  - **Better Error Handling**: Clear messages when accounts not configured
+  - **No Hardcoded Fallbacks**: Eliminates personal data dependencies
+
+### 📁 Template & Documentation Improvements
+
+- **Comprehensive Accounts Template**: New `accounts_mapping_template.csv`
+  - **67 Account Structure**: Complete chart of accounts hierarchy
+  - **GnuCash Compatible**: Proper Type, Full Account Name, and metadata columns
+  - **Multi-Currency Support**: USD, EUR, SGD foreign currency accounts
+  - **Business Ready**: Assets, Liabilities, Income, Expenses, Equity categories
+
+- **Updated Documentation**:
+  - **Environment Variables**: `.env.example` updated to use personal config paths
+  - **Test Scripts**: All test files now use `config/accounts_mapping.csv`
+  - **Setup Instructions**: Clear guidance for personal configuration
+
+### 🛡️ Breaking Changes (Security-First)
+
+- **No Legacy Fallbacks**: System no longer falls back to `data/input/` directory
+- **Setup Required**: Users must run `setup.py` to configure accounts CSV
+- **Personal Config Only**: All accounts data must be in personal configuration
+- **Repository Cleanup**: Removed all hardcoded personal data references
+
+### 🎯 Benefits
+
+- **Zero Personal Data Exposure**: Repository is now completely sanitized
+- **User-Specific Configuration**: Each user has their own chart of accounts
+- **Better Collaboration**: Safe to share repository without exposing personal data
+- **Forced Best Practices**: System requires proper configuration setup
+- **Enhanced Security**: Multiple layers of protection against data exposure
+
+---
+
 ## [3.2.0] - 2025-08-11
 
 ### 🎯 Interactive Review & Correction Interface

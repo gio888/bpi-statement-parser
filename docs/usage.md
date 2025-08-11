@@ -126,9 +126,13 @@ Result: December 15, 2024 (automatically assigned to previous year)
    output_folder = "/path/to/output/"
    ```
 
-2. **Optional: Add your chart of accounts**:
-   ```
-   data/input/Accounts List 2024-07.csv
+2. **Required: Configure your chart of accounts**:
+   ```bash
+   # Run setup wizard to create personal accounts CSV
+   python setup.py
+   
+   # Your accounts will be in:
+   config/accounts_mapping.csv
    ```
 
 ## 📊 Account Mapping (98.7% Automatic)

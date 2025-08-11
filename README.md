@@ -18,9 +18,12 @@ A comprehensive Python tool for extracting transaction data from BPI credit card
 - ✅ **One-Click Download**: Individual files or ZIP bundle
 - ✅ **Mobile-Responsive**: Works on desktop, tablet, and mobile
 
-### 🔒 **Security & Configuration**
-- ✅ **Secure Personal Configuration**: No personal data in repository
-- ✅ **Interactive Setup Wizard**: First-time configuration made easy
+### 🔒 **Security & Configuration (Enhanced v3.2.1)**
+- ✅ **Zero Personal Data**: Complete removal of all personal information from codebase
+- ✅ **Personal Accounts CSV**: Each user maintains their own chart of accounts in config/
+- ✅ **Enhanced Security**: Multiple layers of protection against data exposure
+- ✅ **Interactive Setup Wizard**: Copies comprehensive account templates
+- ✅ **Forced Best Practices**: No fallbacks to hardcoded personal data
 - ✅ **Git History Cleaned**: All personal information removed
 - ✅ **Path Traversal Protection**: Secure file handling
 - ✅ **Local-Only Server**: Web interface only accessible from localhost
@@ -242,8 +245,12 @@ bpi-statement-parser/
 ├── run_tests.py              # 🧪 Test runner (NEW v3.0.0)
 ├── preflight_check.py        # 🧪 Environment validator (NEW v3.0.0)
 ├── account_mapper.py         # Intelligent account mapping
+├── config/                     # 🔒 Personal configuration (gitignored)
+│   ├── config.py             # Personal settings (YOUR PATHS)
+│   ├── accounts_mapping.csv  # Your chart of accounts (67+ accounts)
+│   └── transaction_rules.json# Your custom transaction rules
 ├── data/
-│   ├── input/                # PDFs and accounts list
+│   ├── input/                # PDFs (your statements)
 │   └── output/               # Generated CSV files
 ├── diagnostics/              # Troubleshooting tools
 └── docs/                     # Documentation
@@ -251,26 +258,34 @@ bpi-statement-parser/
 
 ## 🔧 Configuration
 
-### 🔒 **NEW: Secure Configuration System (v3.0.0)**
+### 🔒 **Enhanced: Secure Personal Configuration System (v3.2.1)**
 
-**Personal data is now stored separately from code!** 
+**Complete personal data separation with enhanced security!** 
 
 1. **Run the setup wizard** (first-time only):
    ```bash
    python setup.py
    ```
 
-2. **Configuration is stored in**:
+2. **Personal configuration files created**:
    ```
    config/
-   ├── config.py              # Your personal settings
-   └── card_account_mapping.py # Credit card mappings
+   ├── config.py                 # Your personal settings
+   ├── accounts_mapping.csv      # Your chart of accounts (67+ accounts)
+   └── transaction_rules.json    # Your custom transaction rules
    ```
 
-3. **Environment variable overrides**:
+3. **Enhanced Security Features**:
+   - **No Hardcoded Paths**: System no longer falls back to hardcoded locations
+   - **Personal Accounts CSV**: Each user maintains their own chart of accounts
+   - **Zero Data Exposure**: Repository contains no personal information
+   - **Comprehensive Template**: 67-account template with GnuCash structure
+
+4. **Environment variable overrides**:
    ```bash
    export BPI_PDF_INPUT_FOLDER="/custom/path/to/pdfs"
    export BPI_OUTPUT_FOLDER="/custom/path/to/output"
+   export BPI_ACCOUNTS_CSV="/custom/path/to/accounts.csv"
    export BPI_PRIMARY_CURRENCY="PHP"
    ```
 
@@ -357,6 +372,14 @@ See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for detailed solutions.
 
 ## 🔄 Recent Updates
 
+### 🔒 **v3.2.1 - Critical Security Fixes & Personal Configuration**
+- ✨ **Zero Personal Data** - Complete removal of all personal information from codebase
+- ✨ **Personal Accounts CSV** - Each user maintains their own chart of accounts
+- ✨ **Enhanced Security** - Multiple layers of protection against data exposure  
+- ✨ **No Hardcoded Paths** - System requires proper personal configuration
+- ✨ **67-Account Template** - Comprehensive GnuCash-compatible account structure
+- ✨ **Better Collaboration** - Safe repository sharing without personal data exposure
+
 ### 🎯 **v3.2.0 - Interactive Review & Correction Interface**
 - ✨ **Revolutionary Review System** - Review AI classifications before download
 - ✨ **Confidence Indicators** - Color-coded confidence levels (High ≥70%, Medium 50-69%, Low <50%)
@@ -420,6 +443,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **🌐 From PDF statements to perfect accounting files with AI review** ⚡
 
-**v3.2.0**: Review interface • Confidence scoring • Perfect classifications • Keyboard navigation
+**v3.2.1**: Zero personal data • Personal accounts CSV • Enhanced security • Perfect collaboration
 
 Made with ❤️ for automated expense tracking and financial management
