@@ -127,9 +127,22 @@ class AccountMapper:
         try:
             df = pd.read_csv(csv_path)
             if 'Full Account Name' in df.columns:
-                self.all_accounts = df['Full Account Name'].dropna().tolist()
+                # Load all accounts and filter out system/placeholder accounts
+                all_raw_accounts = df['Full Account Name'].dropna().tolist()
+                
+                # Filter out accounts that are just currency codes or placeholder accounts
+                self.all_accounts = [
+                    acc for acc in all_raw_accounts 
+                    if ':' in acc  # Must have hierarchy (Assets:, Expenses:, etc.)
+                    and not acc.endswith(('-USD', '-EUR', '-JPY', '-AUD', '-CAD', '-CNY', '-GBP', '-HKD', '-HUF', '-IDR', '-ILS', '-KHR', '-KRW', '-MYR', '-QAR', '-SGD', '-THB', '-VND'))  # Filter out currency accounts
+                    and not acc.startswith('Orphan-')  # Filter out orphan accounts
+                ]
+                
                 self.expense_accounts = [acc for acc in self.all_accounts if acc.startswith('Expenses:')]
-                print(f"✅ Loaded {len(self.all_accounts)} accounts ({len(self.expense_accounts)} expense accounts)")
+                print(f"✅ Loaded {len(self.all_accounts)} accounts from {len(all_raw_accounts)} raw accounts ({len(self.expense_accounts)} expense accounts)")
+                
+                # Debug: Print some sample accounts
+                print(f"Sample accounts: {self.all_accounts[:10]}")
             else:
                 print("⚠️  Warning: 'Full Account Name' column not found in accounts CSV")
         except Exception as e:
@@ -202,6 +215,119 @@ class AccountMapper:
         
         # Return default with low confidence
         return self.map_description_to_account(description), 50
+    
+    def get_mapping_with_metadata(self, description: str) -> dict:
+        """Get comprehensive mapping result with metadata for review interface"""
+        if not description:
+            return {
+                'account': 'Manual Review',
+                'confidence': 0,
+                'source': 'default',
+                'alternatives': [],
+                'pattern_matched': None
+            }
+        
+        desc_lower = description.lower()
+        
+        # Strategy 1: Exact known mappings (highest confidence)
+        for pattern, account in self.known_mappings.items():
+            if pattern.lower() in desc_lower:
+                alternatives = self._get_alternatives(description, exclude=account)
+                return {
+                    'account': account,
+                    'confidence': 95,
+                    'source': 'exact_match',
+                    'alternatives': alternatives,
+                    'pattern_matched': pattern
+                }
+        
+        # Strategy 2: Fuzzy matching against known patterns
+        if FUZZY_AVAILABLE and self.known_mappings:
+            known_patterns = list(self.known_mappings.keys())
+            matches = process.extract(description, known_patterns, limit=3)
+            
+            for match, score in matches:
+                if score >= self.fuzzy_threshold:
+                    account = self.known_mappings[match]
+                    alternatives = [self.known_mappings[m] for m, s in matches[1:] if s >= 60]
+                    return {
+                        'account': account,
+                        'confidence': min(score, 85),  # Cap fuzzy matches at 85%
+                        'source': 'fuzzy_match',
+                        'alternatives': alternatives,
+                        'pattern_matched': match
+                    }
+        
+        # Strategy 3: Keyword-based matching
+        for keyword, accounts in self.keyword_rules.items():
+            if keyword in desc_lower:
+                account = accounts[0]
+                # If we have account list, try to find the best match
+                if self.expense_accounts and FUZZY_AVAILABLE:
+                    best_match, score = process.extractOne(account, self.expense_accounts)
+                    if score >= self.keyword_threshold:
+                        account = best_match
+                
+                alternatives = self._get_alternatives(description, exclude=account)
+                return {
+                    'account': account,
+                    'confidence': 60,
+                    'source': 'keyword_match',
+                    'alternatives': alternatives,
+                    'pattern_matched': keyword
+                }
+        
+        # Strategy 4: Default/fallback patterns
+        default_account = "Manual Review"
+        confidence = 10
+        
+        if any(word in desc_lower for word in ['payment', 'thank you', 'credit']):
+            default_account = "Liabilities:Credit Card:BPI Mastercard"
+            confidence = 75  # High confidence for credit card payments
+        elif any(word in desc_lower for word in ['restaurant', 'cafe', 'dining', 'food']):
+            default_account = "Expenses:Food:Dining"
+            confidence = 40
+        elif any(word in desc_lower for word in ['store', 'shop', 'market', 'mall']):
+            default_account = "Expenses:Electronics & Software"
+            confidence = 30
+        elif any(word in desc_lower for word in ['transport', 'taxi', 'grab', 'uber']):
+            default_account = "Expenses:Professional Fees"
+            confidence = 40
+        
+        alternatives = self._get_alternatives(description, exclude=default_account)
+        return {
+            'account': default_account,
+            'confidence': confidence,
+            'source': 'default_pattern' if default_account != 'Manual Review' else 'manual_review',
+            'alternatives': alternatives,
+            'pattern_matched': None
+        }
+    
+    def _get_alternatives(self, description: str, exclude: str = None, limit: int = 3) -> list:
+        """Get alternative account suggestions for a transaction"""
+        if not self.expense_accounts or not FUZZY_AVAILABLE:
+            return []
+        
+        try:
+            # Get fuzzy matches from expense accounts
+            matches = process.extract(description, self.expense_accounts, limit=limit*2)
+            
+            # Filter out the excluded account and low-confidence matches
+            alternatives = []
+            for account, score in matches:
+                if account != exclude and score >= 40 and len(alternatives) < limit:
+                    alternatives.append({
+                        'account': account,
+                        'score': score
+                    })
+            
+            return [alt['account'] for alt in alternatives]
+        except:
+            return []
+    
+    def get_all_valid_accounts(self) -> list:
+        """Get list of all valid account categories for review interface"""
+        return self.all_accounts if self.all_accounts else list(set(self.known_mappings.values()))
     
     def batch_map_descriptions(self, descriptions: List[str]) -> List[str]:
         """Map multiple descriptions efficiently"""

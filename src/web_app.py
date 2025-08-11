@@ -36,7 +36,50 @@ except ImportError:
     from src.statement_finalizer import finalize_statement_csv
     from src.batch_processor import BatchStatementProcessor
     from src.config_loader import get_config
+from account_mapper import AccountMapper
 import pandas as pd
+
+def create_accounting_format(df, corrections_dict=None):
+    """
+    Convert transaction dataframe to double-entry accounting format
+    
+    Args:
+        df: Original transaction dataframe (with capitalized columns)
+        corrections_dict: Dict of corrections {transaction_id: new_account}
+    
+    Returns:
+        DataFrame with accounting format columns
+    """
+    accounting_df = pd.DataFrame()
+    
+    # Basic columns (using capitalized column names)
+    accounting_df['Date'] = df.get('Transaction Date', df.get('Date', ''))
+    accounting_df['Description'] = df.get('Description', '')
+    
+    # Double-entry amount logic
+    original_amounts = pd.to_numeric(df.get('Amount', 0), errors='coerce').fillna(0)
+    
+    accounting_df['Amount (Negated)'] = original_amounts.apply(lambda x: x if x > 0 else 0)
+    accounting_df['Amount'] = original_amounts.apply(lambda x: 0 if x > 0 else abs(x))
+    
+    # Account column (original card account from Card column)
+    accounting_df['Account'] = df.get('Card', 'BPI Card').apply(
+        lambda card: f"Liabilities:Credit Card:BPI Mastercard:{card}" if card != 'BPI Card' else 'Liabilities:Credit Card:BPI Mastercard'
+    )
+    
+    # Target Account (corrected classification)
+    target_accounts = []
+    for idx, row in df.iterrows():
+        if corrections_dict and idx in corrections_dict:
+            # Use user correction
+            target_accounts.append(corrections_dict[idx])
+        else:
+            # Use original AI prediction (already in Target Account column)
+            target_accounts.append(row['Target Account'])
+    
+    accounting_df['Target Account'] = target_accounts
+    
+    return accounting_df
 
 app = Flask(__name__, static_folder='../static', static_url_path='/static')
 CORS(app, origins=['http://localhost:8080', 'http://127.0.0.1:8080'])
@@ -48,6 +91,9 @@ MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # 50MB max file size
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
+
+# Global storage for review sessions
+review_sessions = {}
 
 def allowed_file(filename):
     """Check if file is allowed PDF"""
@@ -128,6 +174,8 @@ def upload_and_process():
         
         # If we have transactions, create the combined output files
         output_files = []
+        review_data = None
+        
         if all_transactions:
             # Create DataFrame from all transactions
             df = pd.DataFrame(all_transactions)
@@ -140,7 +188,61 @@ def upload_and_process():
                 statement_year = pd.to_datetime(statement_dates[0]).year
             df_clean = currency_handler.clean_dataframe(df, statement_year)
             
-            # Save main CSV with new naming convention
+            # Apply account mapping with confidence scores for review
+            try:
+                config = get_config()
+                accounts_csv_path = config.get('ACCOUNTS_CSV_PATH')
+                if not accounts_csv_path:
+                    raise ValueError("ACCOUNTS_CSV_PATH not configured")
+            except Exception as e:
+                print(f"Config error: {e}")
+                accounts_csv_path = os.path.join('data', 'input', 'Accounts List 2024-07.csv')
+            
+            mapper = AccountMapper(accounts_csv_path)
+            
+            # Generate mapping data for review interface
+            review_transactions = []
+            ai_predictions = []
+            
+            for index, row in df_clean.iterrows():
+                description = row.get('Description', '')
+                mapping_data = mapper.get_mapping_with_metadata(description)
+                
+                ai_predictions.append(mapping_data['account'])
+                
+                review_transactions.append({
+                    'id': index,
+                    'date': row.get('Transaction Date', ''),
+                    'description': description,
+                    'amount': row.get('Amount', 0),
+                    'card': row.get('Card', ''),
+                    'current_account': mapping_data['account'],
+                    'confidence': mapping_data['confidence'],
+                    'source': mapping_data['source'],
+                    'alternatives': mapping_data['alternatives'],
+                    'pattern_matched': mapping_data['pattern_matched']
+                })
+            
+            # Add Target Account column to dataframe with AI predictions
+            df_clean['Target Account'] = ai_predictions
+            
+            # Store review session data
+            review_data = {
+                'transactions': review_transactions,
+                'valid_accounts': mapper.get_all_valid_accounts(),
+                'total_transactions': len(review_transactions),
+                'high_confidence': len([t for t in review_transactions if t['confidence'] >= 70]),
+                'medium_confidence': len([t for t in review_transactions if 50 <= t['confidence'] < 70]),
+                'low_confidence': len([t for t in review_transactions if t['confidence'] < 50]),
+                'original_df': df_clean,
+                'process_folder': process_folder,
+                'statement_dates': statement_dates
+            }
+            
+            # Store review session
+            review_sessions[process_id] = review_data
+            
+            # Save main CSV with new naming convention (without finalization initially)
             # Use statement date if available, otherwise current date
             if statement_dates:
                 date_str = statement_dates[0]  # Use first statement date
@@ -150,25 +252,12 @@ def upload_and_process():
             main_csv_path = os.path.join(process_folder, main_filename)
             df_clean.to_csv(main_csv_path, index=False)
             
-            # Run finalization to create the 4 output files in the process folder
-            finalization_result = finalize_statement_csv(main_csv_path, statement_dates, output_folder=process_folder)
-            
-            # Collect all output files
-            if finalization_result:
-                output_files.append({
-                    'name': main_filename,
-                    'path': main_csv_path,
-                    'type': 'main'
-                })
-                
-                # Add card-specific files
-                for csv_path in finalization_result.get('card_csvs', []):
-                    if os.path.exists(csv_path):
-                        output_files.append({
-                            'name': os.path.basename(csv_path),
-                            'path': csv_path,
-                            'type': 'card'
-                        })
+            # Store main file info but don't run finalization yet (wait for review)
+            output_files.append({
+                'name': main_filename,
+                'path': main_csv_path,
+                'type': 'main'
+            })
         
         # Prepare response
         # Consider it successful if we processed files without fatal errors,
@@ -182,7 +271,14 @@ def upload_and_process():
             'total_transactions': len(all_transactions),
             'results': results,
             'output_files': output_files,
-            'process_id': process_id
+            'process_id': process_id,
+            'has_review_data': review_data is not None,
+            'review_summary': {
+                'total_transactions': review_data['total_transactions'] if review_data else 0,
+                'high_confidence': review_data['high_confidence'] if review_data else 0,
+                'medium_confidence': review_data['medium_confidence'] if review_data else 0,
+                'low_confidence': review_data['low_confidence'] if review_data else 0
+            } if review_data else None
         }
         
         return jsonify(response_data)
@@ -256,6 +352,124 @@ def process_single_pdf(filepath, filename):
             'transactions': [],
             'transaction_count': 0
         }
+
+@app.route('/api/review/<process_id>', methods=['GET'])
+def get_review_data(process_id):
+    """Get review data for a process"""
+    try:
+        if process_id not in review_sessions:
+            return jsonify({'error': 'Review data not found'}), 404
+        
+        review_data = review_sessions[process_id]
+        
+        return jsonify({
+            'success': True,
+            'transactions': review_data['transactions'],
+            'valid_accounts': review_data['valid_accounts'],
+            'total_transactions': review_data['total_transactions'],
+            'high_confidence': review_data['high_confidence'],
+            'medium_confidence': review_data['medium_confidence'],
+            'low_confidence': review_data['low_confidence']
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/review/<process_id>/corrections', methods=['POST'])
+def save_corrections(process_id):
+    """Save corrections and generate final files"""
+    try:
+        if process_id not in review_sessions:
+            return jsonify({'error': 'Review session not found'}), 404
+        
+        corrections = request.get_json()
+        if not corrections or 'corrections' not in corrections:
+            return jsonify({'error': 'No corrections provided'}), 400
+        
+        review_data = review_sessions[process_id]
+        df = review_data['original_df'].copy()
+        
+        # Build corrections dictionary
+        corrections_dict = {}
+        corrections_applied = 0
+        
+        for correction in corrections['corrections']:
+            transaction_id = correction.get('id')
+            new_account = correction.get('account')
+            
+            if transaction_id is not None and new_account and transaction_id < len(df):
+                corrections_dict[transaction_id] = new_account
+                corrections_applied += 1
+        
+        # Apply corrections to original dataframe for any intermediate processing
+        for transaction_id, new_account in corrections_dict.items():
+            df.loc[transaction_id, 'Target Account'] = new_account
+        
+        # Create accounting format dataframe
+        accounting_df = create_accounting_format(df, corrections_dict)
+        
+        # Save corrected CSV in accounting format
+        process_folder = review_data['process_folder']
+        statement_dates = review_data['statement_dates']
+        
+        # Use statement date if available, otherwise current date
+        if statement_dates:
+            date_str = statement_dates[0]
+        else:
+            date_str = datetime.now().strftime("%Y-%m-%d")
+        
+        corrected_filename = f"{date_str}_Statement_BPI_Mastercard_Corrected.csv"
+        corrected_path = os.path.join(process_folder, corrected_filename)
+        
+        # Save in accounting format (5 columns)
+        accounting_df.to_csv(corrected_path, index=False)
+        
+        # Only return the corrected file - no finalization needed
+        output_files = [{
+            'name': corrected_filename,
+            'path': corrected_path,
+            'type': 'corrected'
+        }]
+        
+        # Update review session with final files
+        review_sessions[process_id]['output_files'] = output_files
+        review_sessions[process_id]['corrections_applied'] = corrections_applied
+        
+        return jsonify({
+            'success': True,
+            'message': f'Applied {corrections_applied} corrections',
+            'corrections_applied': corrections_applied,
+            'output_files': output_files
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/categories', methods=['GET'])
+def get_categories():
+    """Get all valid account categories"""
+    try:
+        # Load account mapper to get categories
+        try:
+            config = get_config()
+            accounts_csv_path = config.get('ACCOUNTS_CSV_PATH')
+            if not accounts_csv_path:
+                raise ValueError("ACCOUNTS_CSV_PATH not configured")
+        except Exception as e:
+            print(f"Config error: {e}")
+            accounts_csv_path = os.path.join('data', 'input', 'Accounts List 2024-07.csv')
+        
+        mapper = AccountMapper(accounts_csv_path)
+        categories = mapper.get_all_valid_accounts()
+        
+        return jsonify({
+            'success': True,
+            'categories': categories,
+            'count': len(categories)
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/download/<process_id>/<filename>', methods=['GET'])
 def download_file(process_id, filename):

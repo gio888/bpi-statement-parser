@@ -84,7 +84,26 @@
                     <!-- Download buttons will be inserted here -->
                 </div>
                 
-                <button id="download-all-btn" class="btn btn-primary btn-large">
+                <div id="review-prompt" style="display: none;">
+                    <div class="review-prompt-box">
+                        <p><strong>🎯 Would you like to review transaction classifications?</strong></p>
+                        <p>AI has classified your transactions with <span id="confidence-summary"></span>. You can review and correct them before downloading.</p>
+                        
+                        <button id="start-review-btn" class="btn btn-primary">
+                            🔍 Review Classifications
+                        </button>
+                        <button id="download-all-btn" class="btn btn-secondary">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Skip Review & Download All as ZIP
+                        </button>
+                    </div>
+                </div>
+                
+                <button id="download-all-btn-fallback" class="btn btn-primary btn-large" style="display: none;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                         <polyline points="7 10 12 15 17 10"></polyline>
@@ -96,6 +115,88 @@
 
             <div class="actions">
                 <button id="process-more-btn" class="btn btn-secondary">Process More Statements</button>
+            </div>
+        </section>
+
+        <!-- Review Section -->
+        <section id="review-section" class="card review-section" style="display: none;">
+            <h2>🔍 Review Transaction Classifications</h2>
+            
+            <div id="review-summary" class="review-summary">
+                <div class="stat">
+                    <span class="stat-value" id="review-total">0</span>
+                    <span class="stat-label">Total Transactions</span>
+                </div>
+                <div class="stat confidence-high-stat">
+                    <span class="stat-value" id="review-high">0</span>
+                    <span class="stat-label">High Confidence</span>
+                </div>
+                <div class="stat confidence-medium-stat">
+                    <span class="stat-value" id="review-medium">0</span>
+                    <span class="stat-label">Medium Confidence</span>
+                </div>
+                <div class="stat confidence-low-stat">
+                    <span class="stat-value" id="review-low">0</span>
+                    <span class="stat-label">Low Confidence</span>
+                </div>
+            </div>
+
+            <div class="review-info">
+                <p>📊 Review and correct transaction classifications before downloading. <strong>Focus on low and medium confidence items</strong> for best results.</p>
+                
+                <div class="review-controls">
+                    <div class="filter-controls">
+                        <label for="confidence-filter">Filter by confidence:</label>
+                        <select id="confidence-filter">
+                            <option value="all">All Transactions</option>
+                            <option value="low">Low Confidence Only (< 50%)</option>
+                            <option value="medium">Medium Confidence (50-69%)</option>
+                            <option value="high">High Confidence (≥ 70%)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="search-controls">
+                        <label for="description-search">Search descriptions:</label>
+                        <input type="text" id="description-search" placeholder="Type to filter transactions...">
+                    </div>
+                </div>
+            </div>
+
+            <div id="review-table-container" class="review-table-container">
+                <table id="review-table" class="review-table">
+                    <thead>
+                        <tr>
+                            <th class="col-date sortable" data-column="date">Date</th>
+                            <th class="col-description sortable" data-column="description">Description</th>
+                            <th class="col-amount sortable" data-column="amount">Amount</th>
+                            <th class="col-card sortable" data-column="card">Card</th>
+                            <th class="col-prediction sortable" data-column="current_account">Current Classification</th>
+                            <th class="col-confidence sortable" data-column="confidence">Confidence</th>
+                            <th class="col-correction">Corrected Classification</th>
+                        </tr>
+                    </thead>
+                    <tbody id="review-table-body">
+                        <!-- Transaction rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="review-actions">
+                <button id="save-corrections-btn" class="btn btn-primary btn-large">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    Save Corrections & Generate Files
+                </button>
+                <button id="skip-review-btn" class="btn btn-secondary">Skip Review & Use Current Classifications</button>
+                <button id="cancel-review-btn" class="btn btn-secondary">Cancel</button>
+            </div>
+
+            <div id="correction-summary" class="correction-summary" style="display: none;">
+                <h3>✅ Corrections Applied</h3>
+                <p id="corrections-message">Corrections have been saved and final files generated.</p>
             </div>
         </section>
 
